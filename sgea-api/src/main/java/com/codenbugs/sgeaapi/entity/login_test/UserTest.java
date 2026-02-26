@@ -15,13 +15,16 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_user"})})
 public class UserTest implements UserDetails {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="id_user", nullable = false, unique = true)
     private Long id;
     @Column(name = "name", nullable = false)
     private String userName;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
     @Column(name = "email", nullable = false)
     private String email;
     @Column(name = "password", nullable = false)

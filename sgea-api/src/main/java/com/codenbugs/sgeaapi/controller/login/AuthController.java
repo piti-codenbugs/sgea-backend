@@ -1,8 +1,6 @@
 package com.codenbugs.sgeaapi.controller.login;
 
 import com.codenbugs.sgeaapi.dto.login.AuthResponseDTO;
-import com.codenbugs.sgeaapi.entity.login_test.Role;
-import com.codenbugs.sgeaapi.entity.login_test.UserTest;
 import com.codenbugs.sgeaapi.service.login.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +32,19 @@ public class AuthController {
      * @param request contiene los datos del estudiante.
      * @return un objeto de tipo ResponseEntity.
      */
-    @PostMapping(value = "/register")
+    @PostMapping(value = "/register-student")
     public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authService.register(request));
+        return ResponseEntity.ok(authService.registerStudent(request));
+    }
+
+    /**
+     * Endpoint para el registro de docentes
+     *
+     * @param request contiene los datos del docente.
+     * @return un objeto de tipo ResponseEntity
+     */
+    @PostMapping(value = "/register-professor")
+    public ResponseEntity<AuthResponseDTO> registerProfessor(@RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.registerProfessor(request));
     }
 }

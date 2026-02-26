@@ -35,7 +35,7 @@ public class AuthService {
                 .build();
     }
 
-    public AuthResponseDTO register(RegisterRequest request) {
+    public AuthResponseDTO registerStudent(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("El usuario ya está registrado");
         }
@@ -52,7 +52,28 @@ public class AuthService {
         return AuthResponseDTO.builder()
                 .token(jwtService.getToken(user))
                 .message("Estudiante creado correctamente")
-                .role(Role.STUDENT)
+                .role(Role.STUDENT.name())
+                .build();
+    }
+
+    public AuthResponseDTO registerProfessor(RegisterRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new UserAlreadyExistsException("El usuario ya está registrado");
+        }
+
+        UserTest user = UserTest.builder()
+                .userName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.PROFESSOR)
+                .build();
+
+        userRepository.save(user);
+        return AuthResponseDTO.builder()
+                .token(jwtService.getToken(user))
+                .message("Docente creado correctamente")
+                .role(Role.PROFESSOR.name())
                 .build();
     }
 }

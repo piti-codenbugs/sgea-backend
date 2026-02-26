@@ -1,7 +1,6 @@
 package com.codenbugs.sgeaapi.service;
 
 import com.codenbugs.sgeaapi.controller.login.RegisterRequest;
-import com.codenbugs.sgeaapi.entity.login_test.Role;
 import com.codenbugs.sgeaapi.entity.login_test.UserTest;
 import com.codenbugs.sgeaapi.exception.UserAlreadyExistsException;
 import com.codenbugs.sgeaapi.repository.user.UserRepository;
@@ -53,7 +52,7 @@ public class AuthServiceTest {
                 .thenReturn("fake-jwt");
 
         // 2️⃣ Act (ejecutar método)
-        var response = authService.register(request);
+        var response = authService.registerStudent(request);
 
         // 3️⃣ Assert (verificar resultados)
         assertNotNull(response);
@@ -72,7 +71,7 @@ public class AuthServiceTest {
                 .thenReturn(Optional.of(new UserTest()));
 
         assertThrows(UserAlreadyExistsException.class, () -> {
-            authService.register(request);
+            authService.registerStudent(request);
         });
 
         verify(userRepository, never()).save(any());

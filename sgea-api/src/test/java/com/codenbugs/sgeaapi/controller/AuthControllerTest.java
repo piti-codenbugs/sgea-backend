@@ -45,7 +45,7 @@ public class AuthControllerTest {
                 .role(Role.STUDENT)
                 .build();
 
-        when(authService.register(any())).thenReturn(response);
+        when(authService.registerStudent(any())).thenReturn(response);
 
         // JSON del request
         String json = """

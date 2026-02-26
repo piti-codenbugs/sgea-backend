@@ -25,7 +25,7 @@ public class UserTest implements UserDetails {
     private String userName;
     @Column(name = "last_name", nullable = false)
     private String lastName;
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
     @Column(name = "password", nullable = false)
     private String password;
@@ -39,7 +39,7 @@ public class UserTest implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return email;
     }
 
     @Override
@@ -61,4 +61,5 @@ public class UserTest implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }

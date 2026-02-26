@@ -9,6 +9,9 @@ import com.codenbugs.sgeaapi.exception.UserAlreadyExistsException;
 import com.codenbugs.sgeaapi.repository.user.UserRepository;
 import com.codenbugs.sgeaapi.service.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +21,18 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
 
     public AuthResponseDTO login(LoginRequest request) {
-        return null;
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        UserDetails user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        String token = jwtService.getToken(user);
+        return AuthResponseDTO.builder()
+                .token(token)
+                .message("Inicio de sesión exitoso")
+                .name(user.getUsername())
+                .build();
     }
 
     public AuthResponseDTO register(RegisterRequest request) {

@@ -1,4 +1,4 @@
-package com.codenbugs.sgeaapi.security.jwt;
+package com.codenbugs.sgeaapi.security;
 
 import com.codenbugs.sgeaapi.service.jwt.JwtService;
 import jakarta.servlet.FilterChain;
@@ -6,6 +6,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,39 +28,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
      * Método que realiza todos los filtros relacionados con el Token.
-     * @param request contiene el token.
-     * @param response
+     *
+     * @param request     contiene el token.
+     * @param response    modifica lo que se envía al cliente
      * @param filterChain cadena de filtros configurada.
-     * @throws ServletException
-     * @throws IOException
+     * @throws ServletException es una excepción general del contenedor Tomcat, se lanza cuando falla un filtro,
+     *                          un servlet o hay problema en la cadena de filtros.
+     * @throws IOException      es lanzada cuando el cliente cierra la conexión o hay error en la red.
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String token = getTokenFromRequest(request);
-        final String email;
+        try {
+            final String token = getTokenFromRequest(request);
+            final String email;
 
-        if (token == null) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        email = jwtService.getUsernameFromToken(token);
-
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails =  userDetailsService.loadUserByUsername(email);
-
-            if (jwtService.isTokenValid(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (token == null) {
+                filterChain.doFilter(request, response);
+                return;
             }
-        }
 
-        filterChain.doFilter(request, response);
+            email = jwtService.getUsernameFromToken(token);
+
+            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+                if (jwtService.isTokenValid(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            throw new BadRequestException("Token inválido o expirado");
+        }
     }
 
     /**
      * Devuelve el Token
+     *
      * @param request contiene en el encabezado lo que se necesita para generar el Token.
      * @return la cadena de caracteres que representa el Token.
      */

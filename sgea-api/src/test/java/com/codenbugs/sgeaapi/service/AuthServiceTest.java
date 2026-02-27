@@ -51,10 +51,8 @@ public class AuthServiceTest {
         when(jwtService.getToken(any(UserTest.class)))
                 .thenReturn("fake-jwt");
 
-        // 2️⃣ Act (ejecutar método)
         var response = authService.registerStudent(request);
 
-        // 3️⃣ Assert (verificar resultados)
         assertNotNull(response);
         assertEquals("fake-jwt", response.getToken());
 

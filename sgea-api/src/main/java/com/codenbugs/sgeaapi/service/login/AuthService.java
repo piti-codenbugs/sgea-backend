@@ -54,6 +54,8 @@ public class AuthService {
         return AuthResponseDTO.builder()
                 .token(jwtService.getToken(user))
                 .message("Estudiante creado correctamente")
+                .name(user.getUsername())
+                .email(user.getEmail())
                 .role(Role.STUDENT.name())
                 .build();
     }
@@ -75,6 +77,8 @@ public class AuthService {
         return AuthResponseDTO.builder()
                 .token(jwtService.getToken(user))
                 .message("Docente creado correctamente")
+                .name(user.getUsername())
+                .email(user.getEmail())
                 .role(Role.PROFESSOR.name())
                 .build();
     }

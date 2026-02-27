@@ -39,7 +39,7 @@ public class UserTest implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return userName;
     }
 
     @Override

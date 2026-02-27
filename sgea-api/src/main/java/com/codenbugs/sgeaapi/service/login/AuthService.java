@@ -26,12 +26,14 @@ public class AuthService {
 
     public AuthResponseDTO login(LoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserDetails user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        UserTest user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.getToken(user);
         return AuthResponseDTO.builder()
                 .token(token)
                 .message("Inicio de sesión exitoso")
                 .name(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole().toString())
                 .build();
     }
 

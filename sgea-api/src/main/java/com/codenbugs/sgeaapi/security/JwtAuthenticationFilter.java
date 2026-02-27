@@ -1,5 +1,6 @@
 package com.codenbugs.sgeaapi.security;
 
+import com.codenbugs.sgeaapi.entity.login_test.UserTest;
 import com.codenbugs.sgeaapi.service.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -47,11 +48,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            email = jwtService.getUsernameFromToken(token);
-
+            email = jwtService.getEmailFromToken(token);
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
+                UserTest userDetails = (UserTest) userDetailsService.loadUserByUsername(email);
                 if (jwtService.isTokenValid(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

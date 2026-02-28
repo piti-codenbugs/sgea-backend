@@ -2,6 +2,7 @@ package com.codenbugs.sgeaapi.controller.login;
 
 import com.codenbugs.sgeaapi.dto.login.AuthResponseDTO;
 import com.codenbugs.sgeaapi.service.login.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +34,7 @@ public class AuthController {
      * @return un objeto de tipo ResponseEntity.
      */
     @PostMapping(value = "/register-student")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.registerStudent(request));
     }
 
@@ -44,7 +45,7 @@ public class AuthController {
      * @return un objeto de tipo ResponseEntity
      */
     @PostMapping(value = "/register-professor")
-    public ResponseEntity<AuthResponseDTO> registerProfessor(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponseDTO> registerProfessor(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.registerProfessor(request));
     }
 }

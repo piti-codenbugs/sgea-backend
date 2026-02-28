@@ -1,6 +1,6 @@
 package com.codenbugs.sgeaapi.controller.login;
 
-import com.codenbugs.sgeaapi.entity.login_test.Role;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @NoArgsConstructor
@@ -10,8 +10,13 @@ import lombok.*;
 @Builder
 @ToString
 public class RegisterRequest {
-    String firstName;
-    String lastName;
-    String email;
-    String password;
+    @NotBlank(message = "El nombre es obligatorio")
+    private String firstName;
+    @NotBlank(message = "El apellido es obligatorio")
+    private String lastName;
+    @NotBlank(message = "El email es obligatorio")
+    private String email;
+    @NotBlank(message = "La contraseña es obligatoria")
+    private String password;
+    private String carnet;
 }

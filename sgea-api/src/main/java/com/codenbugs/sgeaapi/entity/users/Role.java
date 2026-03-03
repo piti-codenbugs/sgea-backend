@@ -12,15 +12,15 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
-@Table(name = "roles", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_role"})})
+@Table(name = "rol", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_role"})})
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_role",  unique = true, nullable = false)
+    @Column(name = "id_rol",  unique = true, nullable = false)
     private Long idRole;
-    @Column(name = "name_role", nullable = false)
+    @Column(name = "nombre", nullable = false)
     private String name;
-    @Column(name = "description", nullable = false)
+    @Column(name = "descripcion")
     private String description;
     @OneToMany(mappedBy = "role")
     @JsonIgnore

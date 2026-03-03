@@ -7,6 +7,7 @@ import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.entity.student.Student;
 import com.codenbugs.sgeaapi.entity.users.Role;
 import com.codenbugs.sgeaapi.entity.users.User;
+import com.codenbugs.sgeaapi.exception.CarnetAlreadyExistsException;
 import com.codenbugs.sgeaapi.exception.UserAlreadyExistsException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
 import com.codenbugs.sgeaapi.repository.student.StudentRepository;
@@ -50,6 +51,10 @@ public class AuthService {
     public AuthResponseDTO registerStudent(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("El usuario ya está registrado");
+        }
+
+        if (studentRepository.findByCarnet(request.getCarnet()).isPresent()) {
+            throw new CarnetAlreadyExistsException("El carnet ya está registrado");
         }
 
         Role studentRole = roleRepository.findByName("ROLE_STUDENT")
@@ -97,7 +102,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(professorRole)
-                .active(true)
+                .active(false)
                 .registrationDate(LocalDateTime.now())
                 .build();
 

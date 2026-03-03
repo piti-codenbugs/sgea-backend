@@ -38,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try {
+        //try {
             final String token = getTokenFromRequest(request);
             final String email;
 
@@ -58,9 +58,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
+       /* } catch (Exception e) {
             throw new BadRequestException("Token inválido o expirado");
-        }
+        }*/
     }
 
     /**

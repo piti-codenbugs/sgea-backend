@@ -10,13 +10,14 @@ import lombok.*;
 @Setter
 @Builder
 @Entity
-@Table(name = "professor", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_professor"})})
+@Table(name = "docente")
 public class Professor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Long idProfessor;
 
     @OneToOne
-    @JoinColumn(name = "id_user", nullable = false, unique = true)
+    @MapsId
+    @JoinColumn(name = "id_usuario", nullable = false, unique = true)
     private User user;
 }

@@ -18,33 +18,33 @@ import java.util.List;
 @Setter
 @Builder
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_user"})})
+@Table(name = "usuario", uniqueConstraints = {@UniqueConstraint(columnNames = {"id_usuario"})})
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="id_user", nullable = false, unique = true)
+    @Column(name ="id_usuario", nullable = false, unique = true)
     private Long idUser;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "nombres", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "apellidos", nullable = false)
     private String lastName;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password_hash", nullable = false)
     private String password;
 
-    @Column(name = "active_user")
+    @Column(name = "activo")
     private boolean active;
 
-    @Column(name = "registration_date")
+    @Column(name = "fecha_registro", nullable = false)
     private LocalDateTime registrationDate;
 
     @ManyToOne
-    @JoinColumn(name = "id_role",  nullable = false)
+    @JoinColumn(name = "id_rol",  nullable = false)
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

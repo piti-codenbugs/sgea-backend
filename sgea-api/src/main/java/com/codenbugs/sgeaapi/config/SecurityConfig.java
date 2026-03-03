@@ -26,7 +26,7 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
     /**
-     * Configuarción de los endpoints que van a estar públicos y los que necesitaran autenticación.
+     * Configuración de los endpoints que van a estar públicos y los que necesitaran autenticación.
      *
      * @param http
      * @return
@@ -53,7 +53,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:3000"));
+        corsConfiguration.setAllowedOriginPatterns(List.of(
+                "http://localhost:3000",
+                "https://*.ngrok-free.app",
+                "https://*.ngrok-free.dev"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
         corsConfiguration.setAllowCredentials(true);

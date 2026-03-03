@@ -2,7 +2,7 @@ package com.codenbugs.sgeaapi.controller;
 
 import com.codenbugs.sgeaapi.controller.login.AuthController;
 import com.codenbugs.sgeaapi.dto.login.AuthResponseDTO;
-import com.codenbugs.sgeaapi.entity.login_test.Role;
+import com.codenbugs.sgeaapi.security.JwtAuthenticationFilter;
 import com.codenbugs.sgeaapi.service.jwt.JwtService;
 import com.codenbugs.sgeaapi.service.login.AuthService;
 
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class AuthControllerTest {
+class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,31 +32,32 @@ public class AuthControllerTest {
     @MockitoBean
     private JwtService jwtService;
 
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Test
     void shouldRegisterStudentSuccessfully() throws Exception {
 
-        // Simulamos respuesta del service
         AuthResponseDTO response = AuthResponseDTO.builder()
                 .token("fake-jwt")
-                .message("Estudiante registrado correctamente")
+                .message("Estudiante creado correctamente")
                 .name("Estudiante")
                 .email("test@mail.com")
-                .role(Role.STUDENT.name())
+                .role("ROLE_STUDENT")
                 .build();
 
         when(authService.registerStudent(any())).thenReturn(response);
 
-        // JSON del request
         String json = """
                 {
                     "email": "test@mail.com",
                     "password": "1234",
                     "firstName": "Estudiante",
-                    "lastName": "Dev"
+                    "lastName": "Dev",
+                    "carnet": "202031123"
                 }
                 """;
 
-        // Ejecutamos el endpoint
         mockMvc.perform(post("/api/v1/auth/register-student")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -65,24 +65,22 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.token").value("fake-jwt"))
                 .andExpect(jsonPath("$.email").value("test@mail.com"))
                 .andExpect(jsonPath("$.name").value("Estudiante"))
-                .andExpect(jsonPath("$.role").value("STUDENT"));
+                .andExpect(jsonPath("$.role").value("ROLE_STUDENT"));
     }
 
     @Test
     void shouldRegisterProfessorSuccessfully() throws Exception {
 
-        // Simulamos respuesta del service
         AuthResponseDTO response = AuthResponseDTO.builder()
                 .token("fake-jwt")
-                .message("Docente registrado correctamente")
+                .message("Docente creado correctamente")
                 .name("Docente")
                 .email("test@mail.com")
-                .role(Role.PROFESSOR.name())
+                .role("ROLE_PROFESSOR")
                 .build();
 
         when(authService.registerProfessor(any())).thenReturn(response);
 
-        // JSON del request
         String json = """
                 {
                     "email": "test@mail.com",
@@ -92,7 +90,6 @@ public class AuthControllerTest {
                 }
                 """;
 
-        // Ejecutamos el endpoint
         mockMvc.perform(post("/api/v1/auth/register-professor")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -100,25 +97,25 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.token").value("fake-jwt"))
                 .andExpect(jsonPath("$.email").value("test@mail.com"))
                 .andExpect(jsonPath("$.name").value("Docente"))
-                .andExpect(jsonPath("$.role").value("PROFESSOR"));
+                .andExpect(jsonPath("$.role").value("ROLE_PROFESSOR"));
     }
 
     @Test
-    void shouldLoginProfessorSuccessfully() throws Exception {
+    void shouldLoginSuccessfully() throws Exception {
 
         AuthResponseDTO response = AuthResponseDTO.builder()
-                .token("professor-jwt")
-                .message("Login exitoso")
-                .name("Profesor")
-                .email("professor@mail.com")
-                .role(Role.PROFESSOR.name())
+                .token("jwt-token")
+                .message("Inicio de sesión exitoso")
+                .name("Usuario")
+                .email("user@mail.com")
+                .role("ROLE_STUDENT")
                 .build();
 
         when(authService.login(any())).thenReturn(response);
 
         String json = """
             {
-                "email": "professor@mail.com",
+                "email": "user@mail.com",
                 "password": "1234"
             }
             """;
@@ -127,39 +124,9 @@ public class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("professor-jwt"))
-                .andExpect(jsonPath("$.email").value("professor@mail.com"))
-                .andExpect(jsonPath("$.name").value("Profesor"))
-                .andExpect(jsonPath("$.role").value("PROFESSOR"));
-    }
-
-    @Test
-    void shouldLoginStudentSuccessfully() throws Exception {
-
-        AuthResponseDTO response = AuthResponseDTO.builder()
-                .token("student-jwt")
-                .message("Login exitoso")
-                .name("Estudiante")
-                .email("student@mail.com")
-                .role(Role.STUDENT.name())
-                .build();
-
-        when(authService.login(any())).thenReturn(response);
-
-        String json = """
-            {
-                "email": "student@mail.com",
-                "password": "1234"
-            }
-            """;
-
-        mockMvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("student-jwt"))
-                .andExpect(jsonPath("$.email").value("student@mail.com"))
-                .andExpect(jsonPath("$.name").value("Estudiante"))
-                .andExpect(jsonPath("$.role").value("STUDENT"));
+                .andExpect(jsonPath("$.token").value("jwt-token"))
+                .andExpect(jsonPath("$.email").value("user@mail.com"))
+                .andExpect(jsonPath("$.name").value("Usuario"))
+                .andExpect(jsonPath("$.role").value("ROLE_STUDENT"));
     }
 }

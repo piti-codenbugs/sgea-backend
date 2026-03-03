@@ -1,12 +1,11 @@
 package com.codenbugs.sgeaapi.service.jwt;
 
-import com.codenbugs.sgeaapi.entity.login_test.UserTest;
+import com.codenbugs.sgeaapi.entity.users.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -19,11 +18,11 @@ import java.util.function.Function;
 public class JwtService {
     private final String SECRET_KEY = "mZy7Y1hK8vQwT2nLp4Rs6Ux9Ba3Cd5EfGh7JkLmNoP0=";
 
-    public String getToken(UserTest user) {
+    public String getToken(User user) {
         return getToken(new HashMap<>(), user);
     }
 
-    private String getToken(Map<String, Object> extraClaims, UserTest user) {
+    private String getToken(Map<String, Object> extraClaims, User user) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getEmail())
@@ -42,7 +41,7 @@ public class JwtService {
         return getClaim(token, Claims::getSubject);
     }
 
-    public boolean isTokenValid(String token, UserTest userDetails) {
+    public boolean isTokenValid(String token, User userDetails) {
         final String email = getEmailFromToken(token);
         return (email.equals(userDetails.getEmail()) && !isTokenExpired(token));
     }

@@ -1,6 +1,5 @@
 package com.codenbugs.sgeaapi.dto.login;
 
-import com.codenbugs.sgeaapi.entity.login_test.Role;
 import lombok.*;
 
 @NoArgsConstructor

@@ -1,6 +1,7 @@
 package com.codenbugs.sgeaapi.controller.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
+import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.service.professor.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class ProfessorController {
 
     @GetMapping("/status")
     public List<ProfessorDTO> getProfessorsByStatus(
-            @RequestParam("status") String status
+            @RequestParam("status") Status status
     ) {
         return professorService.getByStatus(status);
     }

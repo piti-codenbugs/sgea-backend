@@ -1,16 +1,50 @@
 package com.codenbugs.sgeaapi.service.professor;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
+import com.codenbugs.sgeaapi.entity.users.Role;
+import com.codenbugs.sgeaapi.entity.users.User;
+import com.codenbugs.sgeaapi.enums.Status;
+import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
+import com.codenbugs.sgeaapi.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("")
+import java.util.ArrayList;
+import java.util.List;
+
+@RequiredArgsConstructor
 public class ProfessorService {
 
-    /* todo
+    private final UserRepository userRepository;
 
-    validar que el estado exista para el docente
-    buscar a los docentes con ese estado
-    retornar la informacion basica de ese  docente
-     */
+    public List<ProfessorDTO> getByStatus(String statusRequest ) {
+
+        try {
+            Status status = Status.valueOf(statusRequest);
+            boolean isEnabled = false;
+
+            if (status == Status.ACTIVE) {
+                isEnabled = true;
+            } else if (status == Status.INACTIVE) {
+                isEnabled = false;
+            }
+
+            List<User> users = userRepository.findAllByActiveIsAndRole_Name( isEnabled, "ROLE_DOCENTE" );
+            List<ProfessorDTO> dtos = new ArrayList<>();
+
+            for(User user : users) {
+                dtos.add(
+                        ProfessorDTO.builder()
+                                .id( user.getIdUser() )
+                                .firstName( user.getFirstName() )
+                                .lastName( user.getLastName() )
+                                .email( user.getEmail() )
+                                .build()
+                );
+            }
+            return dtos;
+
+        }catch (IllegalArgumentException e){
+            throw new InvalidArgumentException("El estado ingresado es invalido, estado: <" + statusRequest + ">");
+        }
+    }
 }

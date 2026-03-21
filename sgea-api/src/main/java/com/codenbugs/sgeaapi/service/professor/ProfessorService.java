@@ -3,7 +3,7 @@ package com.codenbugs.sgeaapi.service.professor;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
-import com.codenbugs.sgeaapi.repository.user.UserRepository;
+import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,21 +13,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfessorService {
 
-    private final UserRepository userRepository;
+    private final ProfessorRepository repository;
 
     public List<ProfessorDTO> getByStatus(Status status ) {
 
         try {
-            boolean isEnabled = status == Status.ACTIVE;
+            boolean isActive = status == Status.ACTIVE;
 
-            return userRepository
-                    .findAllByActiveIsAndRole_Name(isEnabled, "ROLE_DOCENTE")
+            return repository
+                    .findAllByUserActive(isActive)
                     .stream()
-                    .map(user -> ProfessorDTO.builder()
-                            .id(user.getIdUser())
-                            .firstName(user.getFirstName())
-                            .lastName(user.getLastName())
-                            .email(user.getEmail())
+                    .map(professor -> ProfessorDTO.builder()
+                            .id(professor.getIdProfessor())
+                            .firstName(professor.getUser().getFirstName())
+                            .lastName(professor.getUser().getLastName())
+                            .email(professor.getUser().getEmail())
                             .build())
                     .toList();
 

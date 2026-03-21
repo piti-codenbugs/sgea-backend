@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ProfessorRepository extends JpaRepository<Professor, Long> {
-    List<Professor> findAllByUserIsActive( boolean active);
+    List<Professor> findAllByUserActive(boolean isActive);
 }

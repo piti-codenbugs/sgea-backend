@@ -18,7 +18,7 @@ public class ProfessorController {
 
     private final ProfessorService professorService;
 
-    @GetMapping("/status")
+    @GetMapping
     public List<ProfessorDTO> getProfessorsByStatus(
             @RequestParam("status") Status status
     ) {

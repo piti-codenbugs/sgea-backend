@@ -29,4 +29,12 @@ public class ProfessorController {
     ) {
         return professorService.getById(id);
     }
+
+    @PatchMapping("/{id}/approve")
+    public ResponseEntity<Void> approve(
+            @PathVariable Long id
+    ){
+        professorService.approve(id);
+        return ResponseEntity.noContent().build();
+    }
 }

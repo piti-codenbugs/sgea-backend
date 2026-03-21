@@ -50,4 +50,10 @@ public class ProfessorService {
                 .registrationDate( p.getUser().getRegistrationDate() )
                 .build();
     }
+
+    public void approve( Long id){
+        // todo: buscar que exista el profesor
+        // todo: cambiar estado
+        // todo: guardar cambio en db
+    }
 }

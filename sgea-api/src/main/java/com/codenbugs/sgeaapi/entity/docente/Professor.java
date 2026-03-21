@@ -1,5 +1,8 @@
 package com.codenbugs.sgeaapi.entity.docente;
 
+import java.util.List;
+
+import com.codenbugs.sgeaapi.entity.course.Course;
 import com.codenbugs.sgeaapi.entity.users.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,4 +23,7 @@ public class Professor {
     @MapsId
     @JoinColumn(name = "id_usuario", nullable = false, unique = true)
     private User user;
+
+    @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
+    private List<Course> courses;
 }

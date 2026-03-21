@@ -1,6 +1,7 @@
 package com.codenbugs.sgeaapi.service.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
+import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
@@ -34,5 +35,19 @@ public class ProfessorService {
         }catch (IllegalArgumentException e){
             throw new InvalidArgumentException("El estado ingresado es invalido, estado: <" + status + ">");
         }
+    }
+
+    public ProfessorDTO getById(Long id) {
+        Professor p = repository.findById(id).orElseThrow(
+                () ->  new InvalidArgumentException("El professor no existe")
+        );
+
+        return ProfessorDTO.builder()
+                .id( p.getIdProfessor() )
+                .firstName( p.getUser().getFirstName() )
+                .lastName( p.getUser().getLastName() )
+                .email( p.getUser().getEmail() )
+                .registrationDate( p.getUser().getRegistrationDate() )
+                .build();
     }
 }

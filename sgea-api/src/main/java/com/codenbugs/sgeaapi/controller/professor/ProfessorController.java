@@ -4,10 +4,8 @@ import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.service.professor.ProfessorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,9 +17,16 @@ public class ProfessorController {
     private final ProfessorService professorService;
 
     @GetMapping
-    public List<ProfessorDTO> getProfessorsByStatus(
+    public ResponseEntity<List<ProfessorDTO>> getProfessorsByStatus(
             @RequestParam("status") Status status
     ) {
-        return professorService.getByStatus(status);
+        return ResponseEntity.ok(professorService.getByStatus(status));
+    }
+
+    @GetMapping("/{id}")
+    public ProfessorDTO getProfessor(
+            @PathVariable Long id
+    ) {
+        return professorService.getById(id);
     }
 }

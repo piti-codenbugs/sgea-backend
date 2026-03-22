@@ -36,12 +36,11 @@ public class GlobalExceptionHandler {
 
     /**
      * Sirve cuando un usuario no tiene los permisos necesarios o no está autenticado.
-     *
-     * @param ex es la excepción capturada.
+     * //@param ex es la excepción capturada.
      * @return un estatus del mensaje, un estado HTTP 401.
      */
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<?> handleBadCredentials(Exception ex) {
+    public ResponseEntity<?> handleBadCredentials( /*Exception ex */) {
         return  buildError(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas");
 //        return ResponseEntity
 //                .status(HttpStatus.UNAUTHORIZED)

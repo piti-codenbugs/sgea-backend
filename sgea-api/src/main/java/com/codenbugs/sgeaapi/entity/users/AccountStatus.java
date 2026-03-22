@@ -19,7 +19,7 @@ public class AccountStatus {
     @Column(name = "id_estado")
     private Long id;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_docente_fk", nullable = false)
     private Professor professor;
 

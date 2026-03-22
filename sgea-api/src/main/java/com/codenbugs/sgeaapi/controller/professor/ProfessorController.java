@@ -1,6 +1,7 @@
 package com.codenbugs.sgeaapi.controller.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
+import com.codenbugs.sgeaapi.entity.users.AccountStatus;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.service.professor.ProfessorService;
 import lombok.RequiredArgsConstructor;
@@ -30,10 +31,12 @@ public class ProfessorController {
         return professorService.getById(id);
     }
 
-    @PatchMapping("/{id}/approve")
+    @PatchMapping("" +
+            "")
     public ResponseEntity<Void> approve(
-            @PathVariable Long id
-    ){
+            @PathVariable Long id,
+            @PathVariable AccountStatus status
+            ){
         professorService.approve(id);
         return ResponseEntity.noContent().build();
     }

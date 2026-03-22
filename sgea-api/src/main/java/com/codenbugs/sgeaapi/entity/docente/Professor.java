@@ -3,6 +3,7 @@ package com.codenbugs.sgeaapi.entity.docente;
 import java.util.List;
 
 import com.codenbugs.sgeaapi.entity.course.Course;
+import com.codenbugs.sgeaapi.entity.users.AccountStatus;
 import com.codenbugs.sgeaapi.entity.users.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,4 +27,7 @@ public class Professor {
 
     @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
     private List<Course> courses;
+
+    @OneToOne( mappedBy = "professor", fetch = FetchType.LAZY)
+    private AccountStatus accountStatus;
 }

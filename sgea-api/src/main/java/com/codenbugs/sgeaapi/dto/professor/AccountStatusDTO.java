@@ -7,9 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class AccountStatusDTO {
-
-    private Long professorId;
     private String comment;
     private AccountStatusType status;
-
 }

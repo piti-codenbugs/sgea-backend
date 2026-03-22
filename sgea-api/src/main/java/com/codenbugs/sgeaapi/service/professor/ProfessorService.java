@@ -1,16 +1,18 @@
 package com.codenbugs.sgeaapi.service.professor;
 
+import com.codenbugs.sgeaapi.dto.professor.AccountStatusDTO;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
+import com.codenbugs.sgeaapi.entity.users.AccountStatus;
 import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
-import com.codenbugs.sgeaapi.enums.Status;
+import com.codenbugs.sgeaapi.entity.users.SessionHelper;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.exception.NotFoundException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
-import com.codenbugs.sgeaapi.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.List;
 public class ProfessorService {
 
     private final ProfessorRepository repository;
+    private final SessionHelper sessionHelper;
 
     public List<ProfessorDTO> getByStatus(AccountStatusType status ) {
 
@@ -54,13 +57,22 @@ public class ProfessorService {
                 .build();
     }
 
-    public void approve( Long id){
+    public void updateAccount(Long id, AccountStatusDTO statusDTO){
 
         Professor p = repository.findById(id).orElseThrow(
                 () -> new NotFoundException("El professor no existe")
         );
 
-        p.getUser().setActive(true);
+        AccountStatusType newStatus = statusDTO.getStatus();
+        if (newStatus == AccountStatusType.PENDIENTE || newStatus == AccountStatusType.RECHAZADO ) {
+            p.getUser().setActive(false);
+        }
+
+        AccountStatus accountStatus = p.getAccountStatus();
+        accountStatus.setStatus(newStatus);
+        accountStatus.setAdmin( sessionHelper.getCurrentUser() );
+        accountStatus.setDate( LocalDateTime.now() );
+        accountStatus.setComment( statusDTO.getComment() );
 
         repository.save(p);
     }

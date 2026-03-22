@@ -1,9 +1,8 @@
 package com.codenbugs.sgeaapi.controller.professor;
 
+import com.codenbugs.sgeaapi.dto.professor.AccountStatusDTO;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
-import com.codenbugs.sgeaapi.entity.users.AccountStatus;
 import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
-import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.service.professor.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +31,12 @@ public class ProfessorController {
         return professorService.getById(id);
     }
 
-    @PatchMapping("/status")
+    @PatchMapping("/{id}/status")
     public ResponseEntity<Void> approve(
             @PathVariable Long id,
-            @PathVariable AccountStatus status
-            ){
-        professorService.approve(id);
+            @RequestBody AccountStatusDTO  statusDTO
+    ){
+        professorService.updateAccount(id, statusDTO);
         return ResponseEntity.noContent().build();
     }
 }

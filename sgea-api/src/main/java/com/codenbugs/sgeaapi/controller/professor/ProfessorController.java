@@ -2,6 +2,7 @@ package com.codenbugs.sgeaapi.controller.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.users.AccountStatus;
+import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.service.professor.ProfessorService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class ProfessorController {
 
     @GetMapping
     public ResponseEntity<List<ProfessorDTO>> getProfessorsByStatus(
-            @RequestParam("status") Status status
+            @RequestParam("status") AccountStatusType status
     ) {
         return ResponseEntity.ok(professorService.getByStatus(status));
     }

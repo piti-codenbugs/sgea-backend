@@ -2,6 +2,7 @@ package com.codenbugs.sgeaapi.service.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
+import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.exception.NotFoundException;
@@ -18,15 +19,12 @@ public class ProfessorService {
 
     private final ProfessorRepository repository;
 
-    public List<ProfessorDTO> getByStatus(Status status ) {
+    public List<ProfessorDTO> getByStatus(AccountStatusType status ) {
 
         try {
-            boolean isActive = status == Status.ACTIVE;
-
-            //List<User> users = userRepository.
 
             return repository
-                    .findAllByUserActive(isActive)
+                    .findAllByAccountStatus_Status( status )
                     .stream()
                     .map(professor -> ProfessorDTO.builder()
                             .id(professor.getIdProfessor())

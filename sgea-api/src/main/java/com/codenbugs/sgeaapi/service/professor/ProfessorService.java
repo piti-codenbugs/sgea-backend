@@ -2,7 +2,6 @@ package com.codenbugs.sgeaapi.service.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
-import com.codenbugs.sgeaapi.entity.users.User;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.exception.NotFoundException;
@@ -18,7 +17,6 @@ import java.util.List;
 public class ProfessorService {
 
     private final ProfessorRepository repository;
-    private final UserRepository userRepository;
 
     public List<ProfessorDTO> getByStatus(Status status ) {
 

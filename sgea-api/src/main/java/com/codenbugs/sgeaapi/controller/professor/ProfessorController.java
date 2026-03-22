@@ -31,8 +31,7 @@ public class ProfessorController {
         return professorService.getById(id);
     }
 
-    @PatchMapping("" +
-            "")
+    @PatchMapping("/status")
     public ResponseEntity<Void> approve(
             @PathVariable Long id,
             @PathVariable AccountStatus status

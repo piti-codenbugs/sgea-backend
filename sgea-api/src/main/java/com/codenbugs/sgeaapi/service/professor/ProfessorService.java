@@ -2,14 +2,18 @@ package com.codenbugs.sgeaapi.service.professor;
 
 import com.codenbugs.sgeaapi.dto.professor.AccountStatusDTO;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
+import com.codenbugs.sgeaapi.dto.professor.UpdateProfessorDTO;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.entity.users.AccountStatus;
 import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
 import com.codenbugs.sgeaapi.entity.users.SessionHelper;
+import com.codenbugs.sgeaapi.entity.users.User;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.exception.NotFoundException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
+import com.codenbugs.sgeaapi.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,6 +24,8 @@ import java.util.List;
 public class ProfessorService {
 
     private final ProfessorRepository repository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final SessionHelper sessionHelper;
 
     public List<ProfessorDTO> getByStatus(AccountStatusType status ) {
@@ -75,5 +81,31 @@ public class ProfessorService {
         accountStatus.setComment( statusDTO.getComment() );
 
         repository.save(p);
+    }
+
+    public void update(Long id, UpdateProfessorDTO dto) {
+        Professor professor = repository.findById(id).orElseThrow(
+                () -> new NotFoundException("Docente no encontrado")
+        );
+
+        User user = professor.getUser();
+
+        // Validar email único solo si cambió
+        if (!user.getEmail().equals(dto.getEmail())) {
+            if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+                throw new InvalidArgumentException("El correo ya está registrado");
+            }
+            user.setEmail(dto.getEmail());
+        }
+
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+
+        // Solo actualizar contraseña si viene en el request
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        repository.save(professor);
     }
 }

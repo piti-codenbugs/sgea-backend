@@ -1,5 +1,6 @@
 package com.codenbugs.sgeaapi.exception;
 
+//import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     /**
      * Sirve para manejar excepción cuando el usuario ya existe.
      *
@@ -21,14 +23,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<?> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(Map.of(
-                        "timestamp", LocalDateTime.now(),
-                        "status", 409,
-                        "error", "Conflict",
-                        "message", ex.getMessage()
-                ));
+        return  buildError(HttpStatus.CONFLICT, ex.getMessage());
+//        return ResponseEntity
+//                .status(HttpStatus.CONFLICT)
+//                .body(Map.of(
+//                        "timestamp", LocalDateTime.now(),
+//                        "status", 409,
+//                        "error", "Conflict",
+//                        "message", ex.getMessage()
+//                ));
     }
 
     /**
@@ -39,14 +42,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<?> handleBadCredentials(Exception ex) {
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of(
-                        "timestamp", LocalDateTime.now(),
-                        "status", 401,
-                        "error", "Unauthorized",
-                        "message", "Credenciales incorrectas"
-                ));
+        return  buildError(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas");
+//        return ResponseEntity
+//                .status(HttpStatus.UNAUTHORIZED)
+//                .body(Map.of(
+//                        "timestamp", LocalDateTime.now(),
+//                        "status", 401,
+//                        "error", "Unauthorized",
+//                        "message", "Credenciales incorrectas"
+//                ));
     }
 
     /**
@@ -68,5 +72,46 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
+    }
+
+    /**
+     * Sirve para capturar la excepción cuando cuando se evia un parametro en un formato ivalido.
+     *
+     * @param ex es la excepción capturada.
+     *
+     * @return un status del mensaje, un estado HTTP 401.
+     */
+//    @ExceptionHandler(InvalidArgumentException.class)
+//    public ResponseEntity<Map<String, String>> handleInvalidArgument(InvalidArgumentException ex) {
+//        Map<String, String> error = Map.of(
+//                "error", ex.getMessage(),
+//                "status", String.valueOf(HttpStatus.BAD_REQUEST.value())
+//        );
+//        return ResponseEntity.badRequest().body(error);
+//    }
+    @ExceptionHandler(InvalidArgumentException.class)
+    public ResponseEntity<?> handleInvalidArgument(InvalidArgumentException ex) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    /**
+     * Sirve para capturar la excepción cuando no se encuentra algo en db.
+     *
+     * @param ex es la excepción capturada.
+     *
+     * @return un status del mensaje, un estado HTTP 401.
+     */
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<?> handleNotFound(NotFoundException ex) {
+        return  buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    private ResponseEntity<?> buildError(HttpStatus status, String message) {
+        return ResponseEntity.status(status).body(Map.of(
+                "timestamp", LocalDateTime.now(),
+                "status", status.value(),
+                "error", status.getReasonPhrase(),
+                "message", message
+        ));
     }
 }

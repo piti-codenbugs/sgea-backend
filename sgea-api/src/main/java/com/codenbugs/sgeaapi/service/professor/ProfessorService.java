@@ -4,6 +4,7 @@ import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.enums.Status;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
+import com.codenbugs.sgeaapi.exception.NotFoundException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class ProfessorService {
                             .firstName(professor.getUser().getFirstName())
                             .lastName(professor.getUser().getLastName())
                             .email(professor.getUser().getEmail())
+                            .registrationDate( professor.getUser().getRegistrationDate() )
                             .build())
                     .toList();
 
@@ -52,8 +54,13 @@ public class ProfessorService {
     }
 
     public void approve( Long id){
-        // todo: buscar que exista el profesor
-        // todo: cambiar estado
-        // todo: guardar cambio en db
+
+        Professor p = repository.findById(id).orElseThrow(
+                () -> new NotFoundException("El professor no existe")
+        );
+
+        p.getUser().setActive(true);
+
+        repository.save(p);
     }
 }

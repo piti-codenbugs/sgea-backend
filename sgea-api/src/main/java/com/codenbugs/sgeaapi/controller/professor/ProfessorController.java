@@ -1,5 +1,6 @@
 package com.codenbugs.sgeaapi.controller.professor;
 
+import com.codenbugs.sgeaapi.controller.login.RegisterRequest;
 import com.codenbugs.sgeaapi.dto.professor.AccountStatusDTO;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
@@ -29,6 +30,15 @@ public class ProfessorController {
             @PathVariable Long id
     ) {
         return professorService.getById(id);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> update(
+            @PathVariable Long id,
+            @RequestBody RegisterRequest dto
+    ){
+
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")

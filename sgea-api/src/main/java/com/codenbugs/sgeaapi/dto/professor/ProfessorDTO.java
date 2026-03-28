@@ -1,6 +1,5 @@
 package com.codenbugs.sgeaapi.dto.professor;
 
-import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,5 +15,5 @@ public class ProfessorDTO {
     private String lastName;
     private String email;
     private LocalDateTime registrationDate;
-    private String rejectedReason;
+    private String rejectionReason;
 }

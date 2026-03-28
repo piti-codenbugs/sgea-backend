@@ -33,7 +33,7 @@ public class EmailService {
         String subject = isApproved ? acceptText : rejectedText;
 
         Map<String, Object> model = Map.of(
-                "userName", user.getFirstName() + user.getLastName(),
+                "userName", user.getFirstName() + " " + user.getLastName(),
                 "tittle", title,
                 "description", description
         );

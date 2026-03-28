@@ -89,11 +89,19 @@ public class ProfessorService {
         }
     }
 
+    /**
+     * Método auxiliar para envíar el correo electrónico
+     *
+     * @param p               es el usuario el cuál recibirá la notificación.
+     * @param newStatus       es el estado de su cuenta.
+     * @param rejectionReason es la razón por la que se rechazó su cuenta.
+     */
     private void preparedAndSendEmail(Professor p, AccountStatusType newStatus, String rejectionReason) {
         boolean isApproved = (newStatus == AccountStatusType.APROBADO);
         String title = isApproved ? "Cuenta de Profesor Aprobada" : "Actualización sobre su cuenta de Profesor";
-        String description = isApproved ? "¡Bienvenido! Tu cuenta ha sido verificada y aprobada por la administración. Ya puedes acceder a todas las funciones."
-                : "Lamentamos informarte que tu solicitud de cuenta ha sido rechazada. Motivo: " + (rejectionReason != null ? rejectionReason + "\n Si ha existido un error comuníquese con administración" : "No especificado.");
+        String approved = "¡Bienvenido! Tu cuenta ha sido verificada y aprobada por la administración. Ya puedes acceder a todas las funciones.";
+        String rejected = "Lamentamos informarte que tu solicitud de cuenta ha sido rechazada.  \nMotivo: " + (rejectionReason != null ? rejectionReason + "\n\n Si ha existido un error comuníquese con administración" : "No especificado.");
+        String description = isApproved ? approved : rejected;
 
         emailService.sendStatusRejectedEmail(p.getUser(), title, description, isApproved);
     }

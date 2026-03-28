@@ -16,5 +16,4 @@ public class ProfessorDTO {
     private String lastName;
     private String email;
     private LocalDateTime registrationDate;
-    private String rejectedReason;
 }

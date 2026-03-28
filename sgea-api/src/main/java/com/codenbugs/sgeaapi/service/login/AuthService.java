@@ -9,6 +9,7 @@ import com.codenbugs.sgeaapi.entity.users.Role;
 import com.codenbugs.sgeaapi.entity.users.User;
 import com.codenbugs.sgeaapi.exception.CarnetAlreadyExistsException;
 import com.codenbugs.sgeaapi.exception.UserAlreadyExistsException;
+import com.codenbugs.sgeaapi.exception.UserDisabledException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
 import com.codenbugs.sgeaapi.repository.student.StudentRepository;
 import com.codenbugs.sgeaapi.repository.user.RoleRepository;
@@ -37,6 +38,11 @@ public class AuthService {
     public AuthResponseDTO login(LoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+
+        if (!user.isActive()) {
+            throw new UserDisabledException("La cuenta se encuentra desactivada. Comuníquese con el administrador si esto es un error.");
+        }
+
         String token = jwtService.getToken(user);
         return AuthResponseDTO.builder()
                 .token(token)

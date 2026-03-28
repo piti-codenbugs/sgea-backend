@@ -78,7 +78,7 @@ public class ProfessorService {
         accountStatus.setStatus(newStatus);
         accountStatus.setAdmin( sessionHelper.getCurrentUser() );
         accountStatus.setDate( LocalDateTime.now() );
-        accountStatus.setComment( statusDTO.getComment() );
+        accountStatus.setComment( statusDTO.getRejectionReason() );
 
         repository.save(p);
     }

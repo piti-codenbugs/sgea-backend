@@ -12,6 +12,7 @@ import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.exception.NotFoundException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
 import com.codenbugs.sgeaapi.repository.user.UserRepository;
+import com.codenbugs.sgeaapi.service.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,60 +28,74 @@ public class ProfessorService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final SessionHelper sessionHelper;
+    private final EmailService emailService;
 
-    public List<ProfessorDTO> getByStatus(AccountStatusType status ) {
+    public List<ProfessorDTO> getByStatus(AccountStatusType status) {
 
         try {
 
             return repository
-                    .findAllByAccountStatus_Status( status )
+                    .findAllByAccountStatus_Status(status)
                     .stream()
                     .map(professor -> ProfessorDTO.builder()
                             .id(professor.getIdProfessor())
                             .firstName(professor.getUser().getFirstName())
                             .lastName(professor.getUser().getLastName())
                             .email(professor.getUser().getEmail())
-                            .registrationDate( professor.getUser().getRegistrationDate() )
+                            .registrationDate(professor.getUser().getRegistrationDate())
                             .build())
                     .toList();
 
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new InvalidArgumentException("El estado ingresado es invalido, estado: <" + status + ">");
         }
     }
 
     public ProfessorDTO getById(Long id) {
         Professor p = repository.findById(id).orElseThrow(
-                () ->  new InvalidArgumentException("El professor no existe")
+                () -> new InvalidArgumentException("El professor no existe")
         );
 
         return ProfessorDTO.builder()
-                .id( p.getIdProfessor() )
-                .firstName( p.getUser().getFirstName() )
-                .lastName( p.getUser().getLastName() )
-                .email( p.getUser().getEmail() )
-                .registrationDate( p.getUser().getRegistrationDate() )
+                .id(p.getIdProfessor())
+                .firstName(p.getUser().getFirstName())
+                .lastName(p.getUser().getLastName())
+                .email(p.getUser().getEmail())
+                .registrationDate(p.getUser().getRegistrationDate())
                 .build();
     }
 
-    public void updateAccount(Long id, AccountStatusDTO statusDTO){
+    public void updateAccount(Long id, AccountStatusDTO statusDTO) {
 
         Professor p = repository.findById(id).orElseThrow(
                 () -> new NotFoundException("El professor no existe")
         );
 
         AccountStatusType newStatus = statusDTO.getStatus();
-        if (newStatus == AccountStatusType.PENDIENTE || newStatus == AccountStatusType.RECHAZADO ) {
+        if (newStatus == AccountStatusType.PENDIENTE || newStatus == AccountStatusType.RECHAZADO) {
             p.getUser().setActive(false);
         }
 
         AccountStatus accountStatus = p.getAccountStatus();
         accountStatus.setStatus(newStatus);
-        accountStatus.setAdmin( sessionHelper.getCurrentUser() );
-        accountStatus.setDate( LocalDateTime.now() );
-        accountStatus.setComment( statusDTO.getRejectionReason() );
+        accountStatus.setAdmin(sessionHelper.getCurrentUser());
+        accountStatus.setDate(LocalDateTime.now());
+        accountStatus.setComment(statusDTO.getRejectionReason());
 
         repository.save(p);
+
+        if (newStatus == AccountStatusType.APROBADO || newStatus == AccountStatusType.RECHAZADO) {
+            preparedAndSendEmail(p, newStatus, statusDTO.getRejectionReason());
+        }
+    }
+
+    private void preparedAndSendEmail(Professor p, AccountStatusType newStatus, String rejectionReason) {
+        boolean isApproved = (newStatus == AccountStatusType.APROBADO);
+        String title = isApproved ? "Cuenta de Profesor Aprobada" : "Actualización sobre su cuenta de Profesor";
+        String description = isApproved ? "¡Bienvenido! Tu cuenta ha sido verificada y aprobada por la administración. Ya puedes acceder a todas las funciones."
+                : "Lamentamos informarte que tu solicitud de cuenta ha sido rechazada. Motivo: " + (rejectionReason != null ? rejectionReason + "\n Si ha existido un error comuníquese con administración" : "No especificado.");
+
+        emailService.sendStatusRejectedEmail(p.getUser(), title, description, isApproved);
     }
 
     public void update(Long id, UpdateProfessorDTO dto) {

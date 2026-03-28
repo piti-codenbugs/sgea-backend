@@ -105,6 +105,16 @@ public class GlobalExceptionHandler {
         return  buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    /**
+     * Maneja la excepción cuando un usuario intenta iniciar seesión pero su cuenta está inactiva.
+     * @param ex es la excepción capturada.
+     * @return es un estatus del mensaje con estado HTTP 403.
+     */
+    @ExceptionHandler(UserDisabledException.class)
+    public ResponseEntity<?> handleUserDisabled(UserDisabledException ex) {
+        return  buildError(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
     private ResponseEntity<?> buildError(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(Map.of(
                 "timestamp", LocalDateTime.now(),

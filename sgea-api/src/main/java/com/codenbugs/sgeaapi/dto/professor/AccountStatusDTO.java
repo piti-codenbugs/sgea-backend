@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class AccountStatusDTO {
-    private String comment;
+    private String rejectionReason;
     private AccountStatusType status;
 }

@@ -4,6 +4,9 @@ import com.codenbugs.sgeaapi.entity.career.Career;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
+
 /**
  *
  * @author ronyrojas
@@ -28,7 +31,6 @@ public class Course {
     @JoinColumn(name = "id_carrera", nullable = false)
     private Career career;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_docente", nullable = true)
-    private Professor professor;
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private List<TeachingAssignmentCourse> assignments;
 }

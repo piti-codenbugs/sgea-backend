@@ -1,4 +1,4 @@
-package com.codenbugs.sgeaapi.entity.users;
+package com.codenbugs.sgeaapi.enums;
 
 public enum AccountStatusType {
     PENDIENTE,

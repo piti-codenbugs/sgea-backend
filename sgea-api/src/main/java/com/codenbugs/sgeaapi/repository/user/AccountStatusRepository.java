@@ -2,7 +2,6 @@ package com.codenbugs.sgeaapi.repository.user;
 
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.entity.users.AccountStatus;
-import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

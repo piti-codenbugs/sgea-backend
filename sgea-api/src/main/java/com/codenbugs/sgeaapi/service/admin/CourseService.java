@@ -1,12 +1,17 @@
 package com.codenbugs.sgeaapi.service.admin;
 
 import com.codenbugs.sgeaapi.dto.course.CourseDTO;
+import com.codenbugs.sgeaapi.dto.professor.ProfessorAssignmentDTO;
+import com.codenbugs.sgeaapi.entity.course.Course;
+import com.codenbugs.sgeaapi.entity.course.TeachingAssignmentCourse;
+import com.codenbugs.sgeaapi.entity.docente.Professor;
+import com.codenbugs.sgeaapi.entity.users.User;
 import com.codenbugs.sgeaapi.repository.course.CourseRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.codenbugs.sgeaapi.entity.course.Course;
-import com.codenbugs.sgeaapi.entity.users.User;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *
@@ -18,34 +23,32 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
 
+
     public List<CourseDTO> getAll() {
         return courseRepository.findAll().stream().map(this::toDTO).toList();
     }
 
-private CourseDTO toDTO(Course course) {
-    String professorName = null;
-    Long professorId = null;
+    private CourseDTO toDTO(Course course) {
+        List<ProfessorAssignmentDTO> professors = course.getAssignments().stream()
+                .map((TeachingAssignmentCourse assignment) -> {
+                    Professor professor = assignment.getProfessor();
+                    User user = professor.getUser();
 
-    if (course.getProfessor() != null) {
-        professorId = course.getProfessor().getIdProfessor();
+                    String fullName = (user != null) ? (user.getFirstName() + " " + user.getLastName()).trim() : "Sin nombre";
 
-        User user = course.getProfessor().getUser();
+                    return ProfessorAssignmentDTO.builder()
+                            .id(professor.getIdProfessor())
+                            .professorName(fullName)
+                            .assignmentDate(LocalDateTime.parse(assignment.getFechaAsignacion() != null ? assignment.getFechaAsignacion().toString() : "Fecha no disponible"))
+                            .build();
+                }).toList();
 
-        if (user != null) {
-            String firstName = user.getFirstName() != null ? user.getFirstName() : "";
-            String lastName = user.getLastName() != null ? user.getLastName() : "";
-
-            professorName = (firstName + " " + lastName).trim();
-        }
+        return CourseDTO.builder()
+                .code(course.getCode())
+                .name(course.getName())
+                .careerId(course.getCareer().getId())
+                .careerName(course.getCareer().getName())
+                .assignedProfessors(professors)
+                .build();
     }
-
-    return CourseDTO.builder()
-            .code(course.getCode())
-            .name(course.getName())
-            .careerId(course.getCareer().getId())
-            .careerName(course.getCareer().getName())
-            .professorId(professorId)
-            .professorName(professorName)
-            .build();
-}
 }

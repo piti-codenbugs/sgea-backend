@@ -1,7 +1,10 @@
 package com.codenbugs.sgeaapi.dto.course;
 
+import com.codenbugs.sgeaapi.dto.professor.ProfessorAssignmentDTO;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  *
@@ -15,6 +18,5 @@ public class CourseDTO {
     private String name;
     private Short careerId;
     private String careerName;
-    private Long professorId;
-    private String professorName;
+    private List<ProfessorAssignmentDTO> assignedProfessors;
 }

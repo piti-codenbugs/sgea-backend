@@ -1,6 +1,6 @@
 package com.codenbugs.sgeaapi.dto.professor;
 
-import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
+import com.codenbugs.sgeaapi.enums.AccountStatusType;
 import lombok.Builder;
 import lombok.Data;
 

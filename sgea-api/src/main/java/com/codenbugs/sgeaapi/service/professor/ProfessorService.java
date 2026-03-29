@@ -5,7 +5,7 @@ import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.dto.professor.UpdateProfessorDTO;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.entity.users.AccountStatus;
-import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
+import com.codenbugs.sgeaapi.enums.AccountStatusType;
 import com.codenbugs.sgeaapi.entity.users.SessionHelper;
 import com.codenbugs.sgeaapi.entity.users.User;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;

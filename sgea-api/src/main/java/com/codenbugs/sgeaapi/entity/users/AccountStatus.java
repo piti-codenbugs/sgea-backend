@@ -1,6 +1,7 @@
 package com.codenbugs.sgeaapi.entity.users;
 
 import com.codenbugs.sgeaapi.entity.docente.Professor;
+import com.codenbugs.sgeaapi.enums.AccountStatusType;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -3,12 +3,11 @@ package com.codenbugs.sgeaapi.controller.professor;
 import com.codenbugs.sgeaapi.dto.professor.AccountStatusDTO;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.dto.professor.UpdateProfessorDTO;
-import com.codenbugs.sgeaapi.entity.users.AccountStatusType;
+import com.codenbugs.sgeaapi.enums.AccountStatusType;
 import com.codenbugs.sgeaapi.service.professor.ProfessorService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

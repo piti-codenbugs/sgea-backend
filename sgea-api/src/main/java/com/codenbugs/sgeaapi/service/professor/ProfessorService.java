@@ -11,8 +11,10 @@ import com.codenbugs.sgeaapi.entity.users.User;
 import com.codenbugs.sgeaapi.exception.InvalidArgumentException;
 import com.codenbugs.sgeaapi.exception.NotFoundException;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
+import com.codenbugs.sgeaapi.repository.user.AccountStatusRepository;
 import com.codenbugs.sgeaapi.repository.user.UserRepository;
 import com.codenbugs.sgeaapi.service.email.EmailService;
+import com.codenbugs.sgeaapi.service.user.AccountStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,11 +31,11 @@ public class ProfessorService {
     private final PasswordEncoder passwordEncoder;
     private final SessionHelper sessionHelper;
     private final EmailService emailService;
+    private final AccountStatusRepository accountStatusRepository;
+    private final AccountStatusService accountStatusService;
 
     public List<ProfessorDTO> getByStatus(AccountStatusType status) {
-
         try {
-
             return repository
                     .findAllByAccountStatus_Status(status)
                     .stream()
@@ -43,6 +45,7 @@ public class ProfessorService {
                             .lastName(professor.getUser().getLastName())
                             .email(professor.getUser().getEmail())
                             .registrationDate(professor.getUser().getRegistrationDate())
+                            .rejectionReason(accountStatusService.getByProfessor(professor).getComment())
                             .build())
                     .toList();
 
@@ -66,7 +69,6 @@ public class ProfessorService {
     }
 
     public void updateAccount(Long id, AccountStatusDTO statusDTO) {
-
         Professor p = repository.findById(id).orElseThrow(
                 () -> new NotFoundException("El professor no existe")
         );
@@ -83,6 +85,7 @@ public class ProfessorService {
         accountStatus.setComment(statusDTO.getRejectionReason());
 
         repository.save(p);
+        accountStatusRepository.save(accountStatus);
 
         if (newStatus == AccountStatusType.APROBADO || newStatus == AccountStatusType.RECHAZADO) {
             preparedAndSendEmail(p, newStatus, statusDTO.getRejectionReason());

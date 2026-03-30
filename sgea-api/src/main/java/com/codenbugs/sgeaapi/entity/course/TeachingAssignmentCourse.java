@@ -28,4 +28,7 @@ public class TeachingAssignmentCourse {
 
     @Column(name = "fecha_asignacion")
     private LocalDateTime fechaAsignacion;
+
+    @Column(name = "periodo", nullable = false, length = 7)
+    private String period;
 }

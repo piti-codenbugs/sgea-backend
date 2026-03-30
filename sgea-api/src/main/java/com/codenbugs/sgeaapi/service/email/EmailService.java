@@ -18,12 +18,10 @@ public class EmailService {
     private static final String FROM = "CodeNBugsDevOps@hotmail.com";
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
-    //private final NotificationRepository notificationRepository;
 
     public EmailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
-        //this.notificationRepository = notificationRepository;
     }
 
     @Async
@@ -38,14 +36,11 @@ public class EmailService {
                 "description", description
         );
 
-        sendTemplateEmail(user, "Cuenta", subject, "confirmation-email", model, null);
+        sendTemplateEmail(user, subject, "confirmation-email", model, null);
     }
 
     @Async
-    protected void sendTemplateEmail(User user, String notificationType, String subject, String templateName, Map<String, Object> model, Date deliveryDate) {
-        // Añadir entidad notificación
-
-        //notificationRepository.save(notification);
+    protected void sendTemplateEmail(User user, String subject, String templateName, Map<String, Object> model, Date deliveryDate) {
 
         try {
             Context context = new Context();
@@ -62,14 +57,8 @@ public class EmailService {
 
             mailSender.send(message);
 
-           // notification.setMessage(html);
-            //notification.setEmailSent(true);
-
         } catch (Exception e) {
             System.err.println("FALLO AL ENVIAR CORREO: " + e.getMessage());
-            //notification.setErrorMessage("ERROR: " + e.getMessage());
-            //notification.setEmailSent(false);
         }
-        //notificationRepository.save(notification);
     }
 }

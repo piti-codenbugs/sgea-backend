@@ -13,4 +13,5 @@ public class ProfessorAssignmentDTO {
     private Long id;
     private String professorName;
     private LocalDateTime assignmentDate;
+    private String period;
 }

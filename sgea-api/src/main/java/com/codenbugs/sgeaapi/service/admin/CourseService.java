@@ -40,6 +40,7 @@ public class CourseService {
                             .id(professor.getIdProfessor())
                             .professorName(fullName)
                             .assignmentDate(LocalDateTime.parse(assignment.getFechaAsignacion() != null ? assignment.getFechaAsignacion().toString() : "Fecha no disponible"))
+                            .period(assignment.getPeriod())
                             .build();
                 }).toList();
 

@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 public class ProfessorAssignmentDTO {
     private Long id;
     private String professorName;
+    private String courseName;
+    private Short courseCode;
     private LocalDateTime assignmentDate;
     private String period;
 }

@@ -26,7 +26,7 @@ public class TeachingAssignmentCourse {
     @JoinColumn(name = "codigo_curso", nullable = false)
     private Course course;
 
-    @Column(name = "fecha_asignacion")
+    @Column(name = "fecha_asignacion", updatable = false, insertable = false)
     private LocalDateTime fechaAsignacion;
 
     @Column(name = "periodo", nullable = false, length = 7)

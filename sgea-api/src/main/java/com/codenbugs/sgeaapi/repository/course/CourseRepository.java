@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, Short> {
 
+    Course findByCode(Short code);
 }

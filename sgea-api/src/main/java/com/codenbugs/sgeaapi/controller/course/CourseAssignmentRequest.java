@@ -1,4 +1,4 @@
-package com.codenbugs.sgeaapi.dto.professor;
+package com.codenbugs.sgeaapi.controller.course;
 
 import lombok.Builder;
 import lombok.Getter;

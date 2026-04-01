@@ -1,11 +1,12 @@
 package com.codenbugs.sgeaapi.controller.admin;
 
-import com.codenbugs.sgeaapi.dto.professor.CourseAssignmentRequest;
+import com.codenbugs.sgeaapi.controller.course.CourseAssignmentRequest;
 import com.codenbugs.sgeaapi.dto.professor.ProfessorAssignmentDTO;
 import com.codenbugs.sgeaapi.service.professor.CourseAssignmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class CourseAssignmentController {
      * @return un estado HTTP con estado 201.
      */
     @PostMapping("/assignments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProfessorAssignmentDTO> createAssignment(@RequestBody CourseAssignmentRequest request) {
         return new ResponseEntity<>(courseAssignmentService.createAssignment(request), HttpStatus.CREATED);
     }
@@ -31,6 +33,7 @@ public class CourseAssignmentController {
      * @return un JSON con todos los datos en la base de datos.
      */
     @GetMapping("/assignments")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ProfessorAssignmentDTO>> getAllAssignments() {
         return ResponseEntity.ok(courseAssignmentService.getAllAssignments());
     }
@@ -39,6 +42,7 @@ public class CourseAssignmentController {
      * Obtiene todos los cursos que el docente logueado tenga asignados.
      * @return el JSON cont todos los cursos asignados.
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROFESSOR')")
     @GetMapping("/my-courses")
     public ResponseEntity<List<ProfessorAssignmentDTO>> getMyCourses() {
         //Validar usuario logueado
@@ -52,6 +56,7 @@ public class CourseAssignmentController {
      * @return un estado HTTP del resultado de la operación.
      */
     @PutMapping("/assignments/{professorId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProfessorAssignmentDTO> updateAssignment(@PathVariable("professorId") Long professorId, @RequestBody CourseAssignmentRequest request) {
         return ResponseEntity.ok(courseAssignmentService.updateAssignment(professorId, request));
     }
@@ -59,9 +64,10 @@ public class CourseAssignmentController {
     /**
      * Permite eliminar una asignación específica por su ID.
      * @param id es el ID del docente que se eliminará el registro.
-     * @return un estod HTTP 204 si la eliminación fue exitosa.
+     * @return un estado HTTP 204 si la eliminación fue exitosa.
      */
     @DeleteMapping("/assignments/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAssignment(@PathVariable("id") Long id) {
         courseAssignmentService.deleteAssignment(id);
         return ResponseEntity.noContent().build();

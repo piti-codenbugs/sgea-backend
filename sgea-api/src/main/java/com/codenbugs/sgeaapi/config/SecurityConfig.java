@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -21,6 +22,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -50,13 +52,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 .requestMatchers("/api/v1/auth/**").permitAll()
-                                // Rutas de ADMIN: CREAR, MODIFICAR o ELIMINAR asignaciones
-                                .requestMatchers(("/api/v1/course-assignment/assigments")).hasRole("ADMIN")
-                                .requestMatchers(("/api/v1/course-assignment/**")).hasRole("ADMIN")
-                                .requestMatchers(("/api/v1/course-assignment/assigments/**")).hasRole("ADMIN")
-                                // Rutas de PROFESSOR: Ver sus cursos asignados
+                                // Roles específicos para docente y admin.
                                 .requestMatchers("/api/v1/course-assignment/my-courses").hasAnyRole("PROFESSOR", "ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/v1/course-assignment/assignments").hasRole("ADMIN")
+                                // Rutas de admin
+                                .requestMatchers("/api/v1/course-assignment/assignments/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/course-assignment/assignments").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/course-assignment/**").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManager ->
                         sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

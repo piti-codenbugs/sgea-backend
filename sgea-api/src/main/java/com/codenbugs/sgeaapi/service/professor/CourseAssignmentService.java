@@ -13,6 +13,8 @@ import com.codenbugs.sgeaapi.exception.RegisterDoesNotExistException;
 import com.codenbugs.sgeaapi.repository.course.CourseRepository;
 import com.codenbugs.sgeaapi.repository.course.TeachingAssignmentCourseRepository;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +29,13 @@ public class CourseAssignmentService {
     private final ProfessorRepository professorRepository;
     private final CourseRepository courseRepository;
     private final SessionHelper sessionHelper;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional
     public ProfessorAssignmentDTO createAssignment(CourseAssignmentRequest request) {
-        if (assignmentCourseRepository.existsByProfessorIdProfessorAndCourseCodeAndPeriod(request.getProfessorId(), request.getCourseCode(), request.getPeriod())) {
+        if (assignmentCourseRepository.existsByProfessorIdProfessorAndCourseCodeAndPeriod(
+                request.getProfessorId(), request.getCourseCode(), request.getPeriod())) {
             throw new AssignmentExistException("El docente ya está asignado a este curso en el periodo: " + request.getPeriod());
         }
 
@@ -46,7 +51,14 @@ public class CourseAssignmentService {
                 .period(request.getPeriod())
                 .build();
 
-        return mapToDTO(assignmentCourseRepository.save(assignment));
+        TeachingAssignmentCourse savedEntity = assignmentCourseRepository.saveAndFlush(assignment);
+
+        entityManager.detach(savedEntity);
+
+        TeachingAssignmentCourse finalEntity = assignmentCourseRepository.findById(savedEntity.getId())
+                .orElseThrow(() -> new RegisterDoesNotExistException("Error al recuperar la asignación"));
+
+        return mapToDTO(finalEntity);
     }
 
     @Transactional(readOnly = true)
@@ -69,25 +81,37 @@ public class CourseAssignmentService {
     }
 
     @Transactional
-    public ProfessorAssignmentDTO updateAssignment(Long professorId, CourseAssignmentRequest request) {
-        TeachingAssignmentCourse assignment = assignmentCourseRepository.findById(professorId)
-                .orElseThrow(() -> new RegisterDoesNotExistException("Asignación no encontrada"));
+    public ProfessorAssignmentDTO updateAssignment(Long assignmentId, CourseAssignmentRequest request) {
+        TeachingAssignmentCourse assignment = assignmentCourseRepository.findById(assignmentId)
+                .orElseThrow(() -> new RegisterDoesNotExistException("Asignación con ID " + assignmentId + " no encontrada"));
 
         Course course = courseRepository.findById(request.getCourseCode())
                 .orElseThrow(() -> new CourseDoesNotExistException("Curso no encontrado"));
 
+        if (request.getProfessorId() != null) {
+            Professor professor = professorRepository.findById(request.getProfessorId())
+                    .orElseThrow(() -> new ProfessorDoesNotExistException("Docente no encontrado"));
+            assignment.setProfessor(professor);
+        }
+
         assignment.setCourse(course);
         assignment.setPeriod(request.getPeriod());
 
-        return mapToDTO(assignmentCourseRepository.save(assignment));
+        TeachingAssignmentCourse saved = assignmentCourseRepository.saveAndFlush(assignment);
+        entityManager.detach(saved);
+
+        TeachingAssignmentCourse finalEntity = assignmentCourseRepository.findById(saved.getId()).get();
+
+        return mapToDTO(finalEntity);
     }
 
     @Transactional
-    public void deleteAssignment(Long id) {
+    public Long deleteAssignment(Long id) {
         if (!assignmentCourseRepository.existsById(id)) {
             throw new RegisterDoesNotExistException("No se puede borrar: El registro no existe");
         }
         assignmentCourseRepository.deleteById(id);
+        return id;
     }
 
     private ProfessorAssignmentDTO mapToDTO(TeachingAssignmentCourse entity) {

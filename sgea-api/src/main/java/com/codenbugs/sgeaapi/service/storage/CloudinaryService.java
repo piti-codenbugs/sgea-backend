@@ -18,11 +18,15 @@ public class CloudinaryService {
 
     public Map<String, String> uploadFile(MultipartFile file) throws IOException {
 
+        String originalFilename = file.getOriginalFilename();
+
         Map uploadResult = cloudinary.uploader().upload(
                 file.getBytes(),
                 Map.of(
-                        "resource_type", "auto",
-                        "folder", "mi_app/dev"
+                        "resource_type", "raw",
+                        "folder", "mi_app/dev",
+                        "use_filename", true,
+                        "unique_filename", true
                 )
         );
 
@@ -33,5 +37,4 @@ public class CloudinaryService {
                 "url", url,
                 "public_id", publicId
         );
-    }
-}
+    }}

@@ -1,6 +1,7 @@
 package com.codenbugs.sgeaapi.service.storage;
 
 import com.cloudinary.Cloudinary;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -10,6 +11,9 @@ import java.util.UUID;
 
 @Service
 public class CloudinaryService {
+
+    @Value("${cloudinary.folder}")
+    private String cloudinaryFolder;
 
     private final Cloudinary cloudinary;
 
@@ -21,11 +25,12 @@ public class CloudinaryService {
 
         String publicId = UUID.randomUUID().toString();
 
-        Map uploadResult = cloudinary.uploader().upload(
+        @SuppressWarnings("unchecked")
+        Map<String, Object> uploadResult = (Map<String, Object>) cloudinary.uploader().upload(
                 file.getBytes(),
                 Map.of(
                         "resource_type", "image",
-                        "folder", "mi_app/dev",
+                        "folder", cloudinaryFolder,
                         "type", "upload",
                         "public_id", publicId,
                         "access_mode", "public"

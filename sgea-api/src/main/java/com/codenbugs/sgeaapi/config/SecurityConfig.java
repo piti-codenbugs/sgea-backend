@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -49,6 +50,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 .requestMatchers("/api/v1/auth/**").permitAll()
+                                // Rutas de ADMIN: CREAR, MODIFICAR o ELIMINAR asignaciones
+                                .requestMatchers(("/api/v1/course-assignment/assigments")).hasRole("ADMIN")
+                                .requestMatchers(("/api/v1/course-assignment/**")).hasRole("ADMIN")
+                                .requestMatchers(("/api/v1/course-assignment/assigments/**")).hasRole("ADMIN")
+                                // Rutas de PROFESSOR: Ver sus cursos asignados
+                                .requestMatchers("/api/v1/course-assignment/my-courses").hasAnyRole("PROFESSOR", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/v1/course-assignment/assignments").hasRole("ADMIN")
                                 .anyRequest().authenticated())
                 .sessionManagement(sessionManager ->
                         sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -8,11 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CourseAssignmentRepository extends JpaRepository<TeachingAssignmentCourse, Long> {
-    List<TeachingAssignmentCourse> findByProfessorIdProfessor(Long professorId);
 
-    boolean existsByProfessorIdAndCourseId(Long professorId, Long courseId);
-
-    List<TeachingAssignmentCourse> findAllByProfessorId(Long professorId);
-
-    List<TeachingAssignmentCourse> findyByPeriod(String period);
 }

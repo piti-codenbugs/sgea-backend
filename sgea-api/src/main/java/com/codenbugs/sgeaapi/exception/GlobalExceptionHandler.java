@@ -1,6 +1,5 @@
 package com.codenbugs.sgeaapi.exception;
 
-//import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,50 +17,32 @@ public class GlobalExceptionHandler {
     /**
      * Sirve para manejar excepción cuando el usuario ya existe.
      *
-     * @param ex es la exepción capturada.
+     * @param ex es la excepción capturada de tipo UserAlreadyExistsException.
      * @return el estatus del mensaje, un estado HTTP 409.
      */
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<?> handleUserAlreadyExists(UserAlreadyExistsException ex) {
-        return  buildError(HttpStatus.CONFLICT, ex.getMessage());
-//        return ResponseEntity
-//                .status(HttpStatus.CONFLICT)
-//                .body(Map.of(
-//                        "timestamp", LocalDateTime.now(),
-//                        "status", 409,
-//                        "error", "Conflict",
-//                        "message", ex.getMessage()
-//                ));
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     /**
      * Sirve cuando un usuario no tiene los permisos necesarios o no está autenticado.
-     * //@param ex es la excepción capturada.
+     *
      * @return un estatus del mensaje, un estado HTTP 401.
      */
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<?> handleBadCredentials( /*Exception ex */) {
-        return  buildError(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas");
-//        return ResponseEntity
-//                .status(HttpStatus.UNAUTHORIZED)
-//                .body(Map.of(
-//                        "timestamp", LocalDateTime.now(),
-//                        "status", 401,
-//                        "error", "Unauthorized",
-//                        "message", "Credenciales incorrectas"
-//                ));
+    public ResponseEntity<?> handleBadCredentials() {
+        return buildError(HttpStatus.UNAUTHORIZED, "Credenciales incorrectas");
     }
 
     /**
      * Sirve para capturar la excepción cuando un campo obligatorio está vacío.
      *
-     * @param ex es la excepción capturada.
-     *
+     * @param ex es la excepción capturada de tipo MethodArgumentNotValidException.
      * @return un status del mensaje, un estado HTTP 401.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
@@ -74,20 +55,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Sirve para capturar la excepción cuando cuando se evia un parametro en un formato ivalido.
+     * Sirve para capturar la excepción cuando cuando se envía un parámetro en un formato inválido.
      *
-     * @param ex es la excepción capturada.
-     *
+     * @param ex es la excepción capturada de tipo InvalidArgumentException.
      * @return un status del mensaje, un estado HTTP 401.
      */
-//    @ExceptionHandler(InvalidArgumentException.class)
-//    public ResponseEntity<Map<String, String>> handleInvalidArgument(InvalidArgumentException ex) {
-//        Map<String, String> error = Map.of(
-//                "error", ex.getMessage(),
-//                "status", String.valueOf(HttpStatus.BAD_REQUEST.value())
-//        );
-//        return ResponseEntity.badRequest().body(error);
-//    }
     @ExceptionHandler(InvalidArgumentException.class)
     public ResponseEntity<?> handleInvalidArgument(InvalidArgumentException ex) {
         return buildError(HttpStatus.BAD_REQUEST, ex.getMessage());
@@ -96,25 +68,76 @@ public class GlobalExceptionHandler {
     /**
      * Sirve para capturar la excepción cuando no se encuentra algo en db.
      *
-     * @param ex es la excepción capturada.
-     *
+     * @param ex es la excepción capturada de tipo NotFoundException.
      * @return un status del mensaje, un estado HTTP 401.
      */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFound(NotFoundException ex) {
-        return  buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     /**
-     * Maneja la excepción cuando un usuario intenta iniciar seesión pero su cuenta está inactiva.
-     * @param ex es la excepción capturada.
-     * @return es un estatus del mensaje con estado HTTP 403.
+     * Maneja la excepción cuando un usuario intenta iniciar sesión, pero su cuenta está inactiva.
+     *
+     * @param ex es la excepción capturada de tipo UserDisabledException.
+     * @return un estatus del mensaje con estado HTTP 403.
      */
     @ExceptionHandler(UserDisabledException.class)
     public ResponseEntity<?> handleUserDisabled(UserDisabledException ex) {
-        return  buildError(HttpStatus.FORBIDDEN, ex.getMessage());
+        return buildError(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
+    /**
+     * Maneja la excepción cuando el docente ya está asignado a un curso en el periodo en curso.
+     *
+     * @param ex es la excepción capturada de tipo AssignmentExistException.
+     * @return un estatus del mensaje con estado HTTP 409.
+     */
+    @ExceptionHandler(AssignmentExistException.class)
+    public ResponseEntity<?> handleAssignmentExist(AssignmentExistException ex) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    /**
+     * Maneja la excepción cuando el docente no existe.
+     *
+     * @param ex es la excepción capturada de tipo ProfessorDoesNotExistException.
+     * @return un estatus del mensaje con estado HTTP 401.
+     */
+    @ExceptionHandler(ProfessorDoesNotExistException.class)
+    public ResponseEntity<?> handleProfessorNotFound(ProfessorDoesNotExistException ex) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    /**
+     * Maneja la excepción cuando el curso no existe.
+     *
+     * @param ex es la excepción capturada de tipo CourseDoesNotExistException.
+     * @return un estatus del mensaje con estado HTTP 401.
+     */
+    @ExceptionHandler(CourseDoesNotExistException.class)
+    public ResponseEntity<?> handleCourseNotFound(CourseDoesNotExistException ex) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    /**
+     * Maneja la excepción cuando un registro no existe.
+     *
+     * @param ex es la excepción capturada de tipo RegisterDoesNotExistException.
+     * @return un estatus del mensaje con estado HTTP 409.
+     */
+    @ExceptionHandler(RegisterDoesNotExistException.class)
+    public ResponseEntity<?> handleRegisterDoesNotExist(RegisterDoesNotExistException ex) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    /**
+     * Método utilitario para estandarizar la respuesta.
+     *
+     * @param status  es el estado de la respuesta de tipo HttpStatus.
+     * @param message es el mensaje de la respuesta de tipo String.
+     * @return un formato estandarizado JSON.
+     */
     private ResponseEntity<?> buildError(HttpStatus status, String message) {
         return ResponseEntity.status(status).body(Map.of(
                 "timestamp", LocalDateTime.now(),

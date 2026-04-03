@@ -2,6 +2,8 @@ package com.codenbugs.sgeaapi.dto.equivalencies;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -9,7 +11,7 @@ import lombok.*;
 @Builder
 public class ProgramCourseDTO {
     private Long id;
-    private Short courseCode;
+    private String courseCode;
     private String courseName;
     private Long professorId;
     private String professorName;
@@ -17,4 +19,5 @@ public class ProgramCourseDTO {
     private Integer semester;
     private String section;
     private String programUrl;
+    private LocalDateTime createdAt;
 }

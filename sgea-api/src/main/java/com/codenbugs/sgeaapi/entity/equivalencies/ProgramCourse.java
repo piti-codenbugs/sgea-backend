@@ -1,6 +1,5 @@
 package com.codenbugs.sgeaapi.entity.equivalencies;
 
-import com.codenbugs.sgeaapi.entity.course.Course;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,12 +19,11 @@ public class ProgramCourse {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_docente", nullable = false)
+    @JoinColumn(name = "id_docente", nullable = true)
     private Professor professor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "codigo_curso", nullable = false)
-    private Course course;
+    @Column(name = "codigo_curso_origen", nullable = false, length = 30)
+    private String originCourseCode;
 
     @Column(name = "anio", nullable = false)
     private Integer year;

@@ -13,8 +13,11 @@ public interface EquivalencyRequestRepository extends JpaRepository<EquivalencyR
             Long studentId,
             Long professorId,
             Short destinationCourseCode,
-            EquivalencyStatus status
-    );
+            EquivalencyStatus status);
 
     List<EquivalencyRequest> findByStudentIdStudentOrderByCreatedAtDesc(Long studentId);
+
+    List<EquivalencyRequest> findByProfessorIdProfessorAndStatusOrderByCreatedAtDesc(
+            Long professorId,
+            EquivalencyStatus status);
 }

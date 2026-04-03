@@ -17,6 +17,7 @@ public interface TeachingAssignmentCourseRepository extends JpaRepository<Teachi
 
     List<TeachingAssignmentCourse> findByProfessorIdProfessorAndPeriod(Long professorId, String period);
 
+    List<TeachingAssignmentCourse> findByCourseCode(Short courseCode);
     @Modifying
     @Query("DELETE FROM TeachingAssignmentCourse t WHERE t.professor.idProfessor = :professorId AND t.period = :period")
     void deleteByProfessorIdAndPeriod(@Param("professorId") Long professorId, @Param("period") String period);

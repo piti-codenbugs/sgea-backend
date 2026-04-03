@@ -132,6 +132,28 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Maneja la excepción cuando una solicitud de equivalencia ya existe en estado pendiente.
+     *
+     * @param ex es la excepción capturada de tipo EquivalencyAlreadyExistsException.
+     * @return un estatus del mensaje con estado HTTP 409.
+     */
+    @ExceptionHandler(EquivalencyAlreadyExistsException.class)
+    public ResponseEntity<?> handleEquivalencyAlreadyExists(EquivalencyAlreadyExistsException ex) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    /**
+     * Maneja la excepción cuando no existe un estudiante para el usuario autenticado.
+     *
+     * @param ex es la excepción capturada de tipo StudentDoesNotExistException.
+     * @return un estatus del mensaje con estado HTTP 404.
+     */
+    @ExceptionHandler(StudentDoesNotExistException.class)
+    public ResponseEntity<?> handleStudentNotFound(StudentDoesNotExistException ex) {
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    /**
      * Método utilitario para estandarizar la respuesta.
      *
      * @param status  es el estado de la respuesta de tipo HttpStatus.

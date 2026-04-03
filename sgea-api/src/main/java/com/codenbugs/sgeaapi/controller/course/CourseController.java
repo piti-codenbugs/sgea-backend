@@ -21,12 +21,12 @@ public class CourseController {
 
     private final CourseService courseService;
 
-     /**
-     * Endpoint para obtener todos los cursos disponibles, valida que el
-     * rol del usuario sea ROLE_ADMIN
+    /**
+     * Endpoint para obtener todos los cursos disponibles.
+     * Puede ser consultado por administradores y estudiantes.
      * @return un objeto de tipo ResponseEntity, que es la lista de cursos
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','ROLE_STUDENT')")
     @GetMapping
     public ResponseEntity<List<CourseDTO>> getAllCourses() {
         return ResponseEntity.ok(courseService.getAll());

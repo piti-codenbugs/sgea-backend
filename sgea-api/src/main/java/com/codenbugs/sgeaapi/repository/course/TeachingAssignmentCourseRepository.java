@@ -13,4 +13,6 @@ public interface TeachingAssignmentCourseRepository extends JpaRepository<Teachi
     boolean existsByProfessorIdProfessorAndCourseCodeAndPeriod(Long professorId, Short courseCode, String period);
 
     List<TeachingAssignmentCourse> findByProfessorIdProfessorAndPeriod(Long professorId, String period);
+
+    List<TeachingAssignmentCourse> findByCourseCode(Short courseCode);
 }

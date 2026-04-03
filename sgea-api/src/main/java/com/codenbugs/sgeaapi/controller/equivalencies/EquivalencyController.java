@@ -2,6 +2,7 @@ package com.codenbugs.sgeaapi.controller.equivalencies;
 
 import com.codenbugs.sgeaapi.dto.equivalencies.EquivalencyRequestDTO;
 import com.codenbugs.sgeaapi.dto.equivalencies.ProgramCourseDTO;
+import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.service.equivalencies.EquivalencyRequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,13 @@ public class EquivalencyController {
     public ResponseEntity<List<ProgramCourseDTO>> getProgramCoursesByCourseCode(
             @RequestParam("courseCode") Short courseCode) {
         return ResponseEntity.ok(equivalencyRequestService.getProgramCoursesByCourseCode(courseCode));
+    }
+
+    @GetMapping("/professors-by-course/{courseCode}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public ResponseEntity<List<ProfessorDTO>> getProfessorsByDestinationCourse(
+            @PathVariable("courseCode") Short courseCode) {
+        return ResponseEntity.ok(equivalencyRequestService.getProfessorsByDestinationCourse(courseCode));
     }
 
     @PostMapping(consumes = "multipart/form-data")

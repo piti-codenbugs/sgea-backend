@@ -3,6 +3,7 @@ package com.codenbugs.sgeaapi.service.equivalencies;
 import com.codenbugs.sgeaapi.controller.equivalencies.CreateEquivalencyRequest;
 import com.codenbugs.sgeaapi.dto.equivalencies.EquivalencyRequestDTO;
 import com.codenbugs.sgeaapi.dto.equivalencies.ProgramCourseDTO;
+import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
 import com.codenbugs.sgeaapi.entity.course.Course;
 import com.codenbugs.sgeaapi.entity.docente.Professor;
 import com.codenbugs.sgeaapi.entity.equivalencies.EquivalencyRequest;
@@ -17,6 +18,7 @@ import com.codenbugs.sgeaapi.exception.NotFoundException;
 import com.codenbugs.sgeaapi.exception.ProfessorDoesNotExistException;
 import com.codenbugs.sgeaapi.exception.StudentDoesNotExistException;
 import com.codenbugs.sgeaapi.repository.course.CourseRepository;
+import com.codenbugs.sgeaapi.repository.course.TeachingAssignmentCourseRepository;
 import com.codenbugs.sgeaapi.repository.equivalencies.EquivalencyRequestRepository;
 import com.codenbugs.sgeaapi.repository.equivalencies.ProgramCourseRepository;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
@@ -41,6 +43,7 @@ public class EquivalencyRequestService {
     private final ProfessorRepository professorRepository;
     private final CourseRepository courseRepository;
     private final ProgramCourseRepository programCourseRepository;
+    private final TeachingAssignmentCourseRepository teachingAssignmentCourseRepository;
     private final SessionHelper sessionHelper;
     private final CloudinaryService cloudinaryService;
 
@@ -55,6 +58,28 @@ public class EquivalencyRequestService {
                         String.valueOf(courseCode))
                 .stream()
                 .map(this::mapProgramCourseToDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProfessorDTO> getProfessorsByDestinationCourse(Short courseCode) {
+        if (courseCode == null) {
+            throw new InvalidArgumentException("El código de curso es obligatorio");
+        }
+
+        courseRepository.findById(courseCode)
+                .orElseThrow(() -> new CourseDoesNotExistException("Curso no encontrado"));
+
+        return teachingAssignmentCourseRepository.findByCourseCode(courseCode)
+                .stream()
+                .map(assignment -> assignment.getProfessor())
+                .distinct()
+                .map(professor -> ProfessorDTO.builder()
+                        .id(professor.getIdProfessor())
+                        .firstName(professor.getUser().getFirstName())
+                        .lastName(professor.getUser().getLastName())
+                        .email(professor.getUser().getEmail())
+                        .build())
                 .toList();
     }
 

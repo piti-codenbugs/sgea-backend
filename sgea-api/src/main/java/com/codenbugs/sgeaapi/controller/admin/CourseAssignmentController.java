@@ -27,7 +27,7 @@ public class CourseAssignmentController {
      */
     @PostMapping("/assignments")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProfessorAssignmentDTO> createAssignment(@RequestBody CourseAssignmentRequest request) {
+    public ResponseEntity<List<ProfessorAssignmentDTO>> createAssignment(@RequestBody CourseAssignmentRequest request) {
         return new ResponseEntity<>(courseAssignmentService.createAssignment(request), HttpStatus.CREATED);
     }
 
@@ -50,21 +50,24 @@ public class CourseAssignmentController {
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESSOR')")
     @GetMapping("/my-courses")
     public ResponseEntity<List<ProfessorAssignmentDTO>> getMyCourses() {
-        //Validar usuario logueado
         return ResponseEntity.ok(courseAssignmentService.getAssignmentsByCurrentProfessor());
     }
 
     /**
      * Permite actualizar la asignación de un docente.
      *
-     * @param id      es el ID del docente que se actualizará.
+     * @param professorId      es el ID del docente que se actualizará.
      * @param request es el JSON con los datos del curso.
      * @return un estado HTTP del resultado de la operación.
      */
     @PutMapping("/assignments/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProfessorAssignmentDTO> updateAssignment(@PathVariable("id") Long id, @RequestBody CourseAssignmentRequest request) {
-        return ResponseEntity.ok(courseAssignmentService.updateAssignment(id, request));
+    public ResponseEntity<List<ProfessorAssignmentDTO>> updateAssignment(@PathVariable("id") Long professorId, @RequestBody CourseAssignmentRequest request) {
+        request.setProfessorId(professorId);
+
+        List<ProfessorAssignmentDTO> updatedAssignments = courseAssignmentService.updateAssignment(request);
+
+        return ResponseEntity.ok(updatedAssignments);
     }
 
     /**

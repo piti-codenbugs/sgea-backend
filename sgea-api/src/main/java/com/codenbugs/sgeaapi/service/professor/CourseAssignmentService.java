@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,32 +34,39 @@ public class CourseAssignmentService {
     private EntityManager entityManager;
 
     @Transactional
-    public ProfessorAssignmentDTO createAssignment(CourseAssignmentRequest request) {
-        if (assignmentCourseRepository.existsByProfessorIdProfessorAndCourseCodeAndPeriod(
-                request.getProfessorId(), request.getCourseCode(), request.getPeriod())) {
-            throw new AssignmentExistException("El docente ya está asignado a este curso en el periodo: " + request.getPeriod());
-        }
+    public List<ProfessorAssignmentDTO> createAssignment(CourseAssignmentRequest request) {
+        List<ProfessorAssignmentDTO> createdDTOs = new ArrayList<>();
 
         Professor professor = professorRepository.findById(request.getProfessorId())
                 .orElseThrow(() -> new ProfessorDoesNotExistException("Docente no encontrado"));
 
-        Course course = courseRepository.findById(request.getCourseCode())
-                .orElseThrow(() -> new CourseDoesNotExistException("Curso no encontrado"));
+        for (Short courseCode : request.getCourseCodes()) {
 
-        TeachingAssignmentCourse assignment = TeachingAssignmentCourse.builder()
-                .professor(professor)
-                .course(course)
-                .period(request.getPeriod())
-                .build();
+            if (assignmentCourseRepository.existsByProfessorIdProfessorAndCourseCodeAndPeriod(
+                    request.getProfessorId(), courseCode, request.getPeriod())) {
+                throw new AssignmentExistException("El docente ya tiene asignado el curso " + courseCode);
+            }
 
-        TeachingAssignmentCourse savedEntity = assignmentCourseRepository.saveAndFlush(assignment);
+            Course course = courseRepository.findById(courseCode)
+                    .orElseThrow(() -> new CourseDoesNotExistException("Curso " + courseCode + " no encontrado"));
 
-        entityManager.detach(savedEntity);
+            TeachingAssignmentCourse assignment = TeachingAssignmentCourse.builder()
+                    .professor(professor)
+                    .course(course)
+                    .period(request.getPeriod())
+                    .build();
 
-        TeachingAssignmentCourse finalEntity = assignmentCourseRepository.findById(savedEntity.getId())
-                .orElseThrow(() -> new RegisterDoesNotExistException("Error al recuperar la asignación"));
+            TeachingAssignmentCourse savedEntity = assignmentCourseRepository.saveAndFlush(assignment);
 
-        return mapToDTO(finalEntity);
+            entityManager.detach(savedEntity);
+
+            TeachingAssignmentCourse finalEntity = assignmentCourseRepository.findById(savedEntity.getId())
+                    .orElseThrow(() -> new RegisterDoesNotExistException("Error al recuperar la asignación guardada"));
+
+            createdDTOs.add(mapToDTO(finalEntity));
+        }
+
+        return createdDTOs;
     }
 
     @Transactional(readOnly = true)
@@ -81,28 +89,38 @@ public class CourseAssignmentService {
     }
 
     @Transactional
-    public ProfessorAssignmentDTO updateAssignment(Long assignmentId, CourseAssignmentRequest request) {
-        TeachingAssignmentCourse assignment = assignmentCourseRepository.findById(assignmentId)
-                .orElseThrow(() -> new RegisterDoesNotExistException("Asignación con ID " + assignmentId + " no encontrada"));
+    public List<ProfessorAssignmentDTO> updateAssignment(CourseAssignmentRequest request) {
+        List<ProfessorAssignmentDTO> updatedAssignments = new ArrayList<>();
 
-        Course course = courseRepository.findById(request.getCourseCode())
-                .orElseThrow(() -> new CourseDoesNotExistException("Curso no encontrado"));
+        Professor professor = professorRepository.findById(request.getProfessorId())
+                .orElseThrow(() -> new ProfessorDoesNotExistException("Docente no encontrado"));
 
-        if (request.getProfessorId() != null) {
-            Professor professor = professorRepository.findById(request.getProfessorId())
-                    .orElseThrow(() -> new ProfessorDoesNotExistException("Docente no encontrado"));
-            assignment.setProfessor(professor);
+        assignmentCourseRepository.deleteByProfessorIdAndPeriod(request.getProfessorId(), request.getPeriod());
+
+        entityManager.flush();
+        entityManager.clear();
+
+        for (Short courseCode : request.getCourseCodes()) {
+            Course course = courseRepository.findById(courseCode)
+                    .orElseThrow(() -> new CourseDoesNotExistException("Curso " + courseCode + " no encontrado"));
+
+            TeachingAssignmentCourse newAssignment = TeachingAssignmentCourse.builder()
+                    .professor(professor)
+                    .course(course)
+                    .period(request.getPeriod())
+                    .build();
+
+            TeachingAssignmentCourse saved = assignmentCourseRepository.saveAndFlush(newAssignment);
+
+            entityManager.detach(saved);
+
+            TeachingAssignmentCourse finalEntity = assignmentCourseRepository.findById(saved.getId())
+                    .orElseThrow(() -> new RegisterDoesNotExistException("Error al recuperar la nueva asignación"));
+
+            updatedAssignments.add(mapToDTO(finalEntity));
         }
 
-        assignment.setCourse(course);
-        assignment.setPeriod(request.getPeriod());
-
-        TeachingAssignmentCourse saved = assignmentCourseRepository.saveAndFlush(assignment);
-        entityManager.detach(saved);
-
-        TeachingAssignmentCourse finalEntity = assignmentCourseRepository.findById(saved.getId()).get();
-
-        return mapToDTO(finalEntity);
+        return updatedAssignments;
     }
 
     @Transactional

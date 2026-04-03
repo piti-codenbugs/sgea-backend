@@ -1,14 +1,16 @@
 package com.codenbugs.sgeaapi.controller.course;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.List;
+
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder
 public class CourseAssignmentRequest {
     private Long professorId;
-    private Short courseCode;
+    private List<Short> courseCodes;
     private String period;
 }

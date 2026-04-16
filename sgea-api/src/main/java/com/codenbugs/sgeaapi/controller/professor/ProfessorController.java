@@ -1,0 +1,53 @@
+package com.codenbugs.sgeaapi.controller.professor;
+
+import com.codenbugs.sgeaapi.dto.professor.AccountStatusDTO;
+import com.codenbugs.sgeaapi.dto.professor.ProfessorDTO;
+import com.codenbugs.sgeaapi.dto.professor.UpdateProfessorDTO;
+import com.codenbugs.sgeaapi.enums.AccountStatusType;
+import com.codenbugs.sgeaapi.service.professor.ProfessorService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/professor")
+@RequiredArgsConstructor
+public class ProfessorController {
+
+    private final ProfessorService professorService;
+
+    @GetMapping
+    public ResponseEntity<List<ProfessorDTO>> getProfessorsByStatus(
+            @RequestParam("status") AccountStatusType status
+    ) {
+        return ResponseEntity.ok(professorService.getByStatus(status));
+    }
+
+    @GetMapping("/{id}")
+    public ProfessorDTO getProfessor(
+            @PathVariable Long id
+    ) {
+        return professorService.getById(id);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> update(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateProfessorDTO dto
+    ) {
+        professorService.update(id, dto);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> approve(
+            @PathVariable Long id,
+            @RequestBody AccountStatusDTO  statusDTO
+    ){
+        professorService.updateAccount(id, statusDTO);
+        return ResponseEntity.noContent().build();
+    }
+}

@@ -1,6 +1,7 @@
 package com.codenbugs.sgeaapi.entity.users;
 
 import com.codenbugs.sgeaapi.entity.docente.Professor;
+import com.codenbugs.sgeaapi.enums.AccountStatusType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,7 @@ public class AccountStatus {
     @Column(name = "id_estado")
     private Long id;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_docente_fk", nullable = false)
     private Professor professor;
 

@@ -1,0 +1,2 @@
+ALTER TABLE curso
+ALTER COLUMN id_docente DROP NOT NULL;

@@ -1,5 +1,6 @@
 package com.codenbugs.sgeaapi.service.email;
 
+import com.codenbugs.sgeaapi.entity.student.Student;
 import com.codenbugs.sgeaapi.entity.users.User;
 import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Message;
@@ -42,7 +43,27 @@ public class EmailService {
 
         Map<String, Object> model = Map.of(
                 "userName", user.getFirstName() + " " + user.getLastName(),
-                "tittle", title,
+                "title", title,
+                "description", description
+        );
+
+        sendTemplateEmail(user, subject, "confirmation-email", model, null);
+    }
+
+    @Async
+    public void sendEquivalencyStatusEmail(Student student, boolean isApproved, String comment) {
+        User user = student.getUser();
+
+        String subject = isApproved ? "Equivalencia aprobada" : "Equivalencia rechazada";
+        String title = isApproved ? "Tu solicitud de equivalencia fue aprobada" : "Tu solicitud de equivalencia fue rechazada";
+        String description = isApproved
+                ? "Tu solicitud de equivalencia ha sido aprobada exitosamente."
+                : "Tu solicitud de equivalencia ha sido rechazada. Motivo: "
+                + (comment != null ? comment : "No especificado");
+
+        Map<String, Object> model = Map.of(
+                "userName", user.getFirstName() + " " + user.getLastName() + ", carnet: " + student.getCarnet(),
+                "title", title,
                 "description", description
         );
 

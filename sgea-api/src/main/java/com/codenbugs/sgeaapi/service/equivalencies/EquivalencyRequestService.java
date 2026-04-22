@@ -23,6 +23,7 @@ import com.codenbugs.sgeaapi.repository.equivalencies.EquivalencyRequestReposito
 import com.codenbugs.sgeaapi.repository.equivalencies.ProgramCourseRepository;
 import com.codenbugs.sgeaapi.repository.professor.ProfessorRepository;
 import com.codenbugs.sgeaapi.repository.student.StudentRepository;
+import com.codenbugs.sgeaapi.service.email.EmailService;
 import com.codenbugs.sgeaapi.service.storage.CloudinaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class EquivalencyRequestService {
     private final TeachingAssignmentCourseRepository teachingAssignmentCourseRepository;
     private final SessionHelper sessionHelper;
     private final CloudinaryService cloudinaryService;
+    private final EmailService emailService;
 
     @Transactional(readOnly = true)
     public List<ProgramCourseDTO> getProgramCoursesByCourseCode(Short courseCode) {
@@ -242,6 +244,8 @@ public class EquivalencyRequestService {
         request.setResolutionDate(LocalDateTime.now());
 
         EquivalencyRequest updated = equivalencyRequestRepository.save(request);
+
+        emailService.sendEquivalencyStatusEmail(request.getStudent(), false, comment);
         return mapToDTO(updated);
     }
 
@@ -268,6 +272,8 @@ public class EquivalencyRequestService {
         request.setResolutionDate(LocalDateTime.now());
 
         EquivalencyRequest updated = equivalencyRequestRepository.save(request);
+
+        emailService.sendEquivalencyStatusEmail(request.getStudent(), true, null);
         return mapToDTO(updated);
     }
 

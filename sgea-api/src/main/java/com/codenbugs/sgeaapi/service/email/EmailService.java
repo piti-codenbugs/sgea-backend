@@ -79,7 +79,7 @@ public class EmailService {
             String html = templateEngine.process(templateName, context);
 
             // 🔹 Enviar con Resend (HTTP)
-            sendWithGmail("tzunundonavin@gmail.com", subject, html);
+            sendWithGmail(user.getEmail(), subject, html);
 
         } catch (Exception e) {
             System.err.println("FALLO AL ENVIAR CORREO: " + e.getMessage());

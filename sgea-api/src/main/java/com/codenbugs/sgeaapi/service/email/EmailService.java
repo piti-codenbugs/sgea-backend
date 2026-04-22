@@ -1,26 +1,29 @@
 package com.codenbugs.sgeaapi.service.email;
 
 import com.codenbugs.sgeaapi.entity.users.User;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.context.Context;
-
 
 import java.util.Date;
 import java.util.Map;
 
 @Service
 public class EmailService {
-    private static final String FROM = "CodeNBugsDevOps@hotmail.com";
-    private final JavaMailSender mailSender;
-    private final SpringTemplateEngine templateEngine;
+    private static final String FROM = "onboarding@resend.dev";
 
-    public EmailService(JavaMailSender mailSender, SpringTemplateEngine templateEngine) {
-        this.mailSender = mailSender;
+    @Value("${resend.api.key}")
+    private String apiKey;
+
+    //private static final String FROM = "CodeNBugsDevOps@hotmail.com";
+    private final SpringTemplateEngine templateEngine;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public EmailService(SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
     }
 
@@ -47,18 +50,39 @@ public class EmailService {
             context.setVariables(model);
             String html = templateEngine.process(templateName, context);
 
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-
-            helper.setTo(user.getEmail());
-            helper.setSubject(subject);
-            helper.setText(html, true);
-            helper.setFrom(FROM);
-
-            mailSender.send(message);
+            // 🔹 Enviar con Resend (HTTP)
+            sendWithResend(user.getEmail(), subject, html);
 
         } catch (Exception e) {
             System.err.println("FALLO AL ENVIAR CORREO: " + e.getMessage());
+        }
+    }
+
+    private void sendWithResend(String to, String subject, String html) {
+
+        String url = "https://api.resend.com/emails";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> body = Map.of(
+                "from", FROM,
+                "to", to,
+                "subject", subject,
+                "html", html
+        );
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        try {
+            ResponseEntity<String> response =
+                    restTemplate.postForEntity(url, request, String.class);
+
+            System.out.println("Correo enviado, status: " + response.getStatusCode());
+
+        } catch (Exception e) {
+            System.err.println("ERROR enviando correo con Resend: " + e.getMessage());
         }
     }
 }

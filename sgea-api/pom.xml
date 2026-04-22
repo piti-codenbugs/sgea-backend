@@ -105,6 +105,12 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
+        <dependency>
+            <groupId>com.resend</groupId>
+            <artifactId>resend-java</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
 		<!-- Key para correo -->
 		<dependency>
 		<groupId>io.github.cdimascio</groupId>

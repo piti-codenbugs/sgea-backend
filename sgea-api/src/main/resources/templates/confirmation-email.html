@@ -2,23 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <style>
-        .container { font-family: sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; }
-        .header { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        .content { margin-top: 20px; color: #555; line-height: 1.5; }
-        .footer { margin-top: 30px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 10px; }
-    </style>
 </head>
-<body>
-    <div class="container">
-        <h1 class="header" th:text="${title}">Título por defecto</h1>
-        <div class="content">
-            <p>Hola <strong th:text="${userName}">Usuario</strong>,</p>
-            <p th:text="${description}">Descripción del mensaje...</p>
-        </div>
-        <div class="footer">
-            <p>Este es un correo automático, por favor no respondas.</p>
-        </div>
-    </div>
+<body style="margin:0; padding:0; background-color:#f4f6f8; font-family: Arial, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8; padding:20px;">
+    <tr>
+        <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                <tr>
+                    <td style="background:#2c3e50; padding:15px 20px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="left" style="vertical-align:middle;">
+                                    <img
+                                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRR7VMkoP_7Y2O8ZmrmSu_Hkcpage9bb-b4JA&s"
+                                            alt="SGEA"
+                                            width="50"
+                                            height="50"
+                                            style="border-radius:50%; display:block;"
+                                    >
+                                </td>
+
+                                <td align="left" style="vertical-align:middle; padding-left:10px;">
+                                    <h1 style="color:#ffffff; margin:0; font-size:20px;">
+                                        SGEA
+                                    </h1>
+                                </td>
+
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding:30px; color:#333;">
+                        <h2 style="margin-top:0; color:#2c3e50;" th:text="${title}">
+                            Título
+                        </h2>
+
+                        <p>
+                            Hola <strong th:text="${userName}">Usuario</strong>,
+                        </p>
+
+                        <p style="line-height:1.6;" th:text="${description}">
+                            Descripción del mensaje...
+                        </p>
+
+                        <div style="margin-top:20px;">
+                            <a href="https://sgea-frontend-indol.vercel.app" style="background:#3498db; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px;">
+                                Ir al sistema
+                            </a>
+                        </div>
+                        <p style="margin:25px 0 0;font-size:12px;color:#777">
+                            Este es un correo automático, por favor no respondas.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="background:#f8f9fa; padding:20px; text-align:center; font-size:12px; color:#777;">
+                        <p style="margin:0;">
+                            © 2026 SGEA - Sistema de Gestión Académica
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
 </body>
 </html>

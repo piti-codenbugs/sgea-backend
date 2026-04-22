@@ -1,30 +1,37 @@
 package com.codenbugs.sgeaapi.service.email;
 
 import com.codenbugs.sgeaapi.entity.users.User;
+import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Message;
+import jakarta.mail.Session;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
+import java.util.Properties;
 
 @Service
 public class EmailService {
-    private static final String FROM = "onboarding@resend.dev";
 
-    @Value("${resend.api.key}")
-    private String apiKey;
+    private final GmailAuthUtil gmailAuthUtil;
 
-    //private static final String FROM = "CodeNBugsDevOps@hotmail.com";
     private final SpringTemplateEngine templateEngine;
-    private final RestTemplate restTemplate = new RestTemplate();
 
-    public EmailService(SpringTemplateEngine templateEngine) {
+    @Value("${gmail.api.from-email}")
+    private String fromEmail;
+
+    public EmailService(SpringTemplateEngine templateEngine, GmailAuthUtil gmailAuthUtil) {
         this.templateEngine = templateEngine;
+        this.gmailAuthUtil = gmailAuthUtil;
     }
 
     @Async
@@ -51,38 +58,52 @@ public class EmailService {
             String html = templateEngine.process(templateName, context);
 
             // 🔹 Enviar con Resend (HTTP)
-            sendWithResend(user.getEmail(), subject, html);
+            sendWithGmail("tzunundonavin@gmail.com", subject, html);
 
         } catch (Exception e) {
             System.err.println("FALLO AL ENVIAR CORREO: " + e.getMessage());
         }
     }
 
-    private void sendWithResend(String to, String subject, String html) {
-
-        String url = "https://api.resend.com/emails";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + apiKey);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> body = Map.of(
-                "from", FROM,
-                "to", to,
-                "subject", subject,
-                "html", html
-        );
-
-        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
-
+    private void sendWithGmail(String to, String subject, String html) {
         try {
-            ResponseEntity<String> response =
-                    restTemplate.postForEntity(url, request, String.class);
+            Gmail service = gmailAuthUtil.getGmailService();
 
-            System.out.println("Correo enviado, status: " + response.getStatusCode());
+            MimeMessage email = createEmail(to, fromEmail, subject, html);
+            Message message = createMessageWithEmail(email);
+
+            service.users().messages().send("me", message).execute();
+
+            System.out.println("Correo enviado con Gmail API");
 
         } catch (Exception e) {
-            System.err.println("ERROR enviando correo con Resend: " + e.getMessage());
+            System.err.println("ERROR enviando correo con Gmail: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    private MimeMessage createEmail(String to, String from, String subject, String bodyHtml) throws Exception {
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+
+        MimeMessage email = new MimeMessage(session);
+        email.setFrom(new InternetAddress(from));
+        email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to));
+        email.setSubject(subject);
+        email.setContent(bodyHtml, "text/html; charset=utf-8");
+
+        return email;
+    }
+
+    private Message createMessageWithEmail(MimeMessage email) throws Exception {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        email.writeTo(buffer);
+        byte[] rawBytes = buffer.toByteArray();
+
+        String encodedEmail = Base64.getUrlEncoder().encodeToString(rawBytes);
+
+        Message message = new Message();
+        message.setRaw(encodedEmail);
+        return message;
     }
 }
